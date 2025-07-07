@@ -33,6 +33,7 @@ CREATE TABLE Client_EF (
     adresse TEXT,
     telephone VARCHAR(20),
     email VARCHAR(100) UNIQUE NOT NULL,
+    actif BOOLEAN NOT NULL DEFAULT 1,
     dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 );
@@ -41,13 +42,17 @@ CREATE TABLE Pret_EF (
     idPret INT PRIMARY KEY AUTO_INCREMENT,
     idClient INT,
     idTypePret INT,
+    idEtablissementFinancier INT NOT NULL,
     montant DECIMAL(15,2) NOT NULL,
     dureeMois INT NOT NULL,
     dateDemande DATE NOT NULL,
-    dateAccord DATE,                    
+    dateAccord DATE,                
+    interets DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    dateRetourEstimee DATE NOT NULL,
     statut ENUM('en_attente', 'accorde', 'refuse', 'rembourse') DEFAULT 'en_attente',
     FOREIGN KEY (idClient) REFERENCES Client_EF(idClient) ON DELETE CASCADE,
-    FOREIGN KEY (idTypePret) REFERENCES TypePret_EF(idTypePret) ON DELETE CASCADE
+    FOREIGN KEY (idTypePret) REFERENCES TypePret_EF(idTypePret) ON DELETE CASCADE,
+    FOREIGN KEY (idEtablissementFinancier) REFERENCES EtablissementFinancier_EF(idEtablissementFinancier)
 );
 
 -- CREATE TABLE Remboursement (

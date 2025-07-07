@@ -2,11 +2,15 @@
 require_once __DIR__ . '/../models/EtablissementFinancier.php';
 require_once __DIR__ . '/../helpers/Utils.php';
 
+
 class EtablissementFinancierController {
     public static function getAll() {
         $etablissements = EtablissementFinancier::getAll();
         Flight::json($etablissements);
     }
+
+
+
 
     public static function getById($id) {
         $etablissement = EtablissementFinancier::getById($id);

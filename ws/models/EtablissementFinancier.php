@@ -4,9 +4,10 @@ require_once __DIR__ . '/../db.php';
 class EtablissementFinancier {
     public static function getAll() {
         $db = getDB();
-        $stmt = $db->query("SELECT * FROM EtablissementFinancier_EF");
+        $stmt = $db->query("SELECT idEtablissementFinancier, nomEtablissementFinancier, fondTotal FROM EtablissementFinancier_EF");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
     public static function getById($id) {
         $db = getDB();
