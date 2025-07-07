@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Finance | Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #1a2a3a;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --accent-light: #5dade2;
+            --text-color: #ecf0f1;
+            --text-light: #bdc3c7;
+            --hover-color: #2980b9;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f8fafc;
+            color: #333;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(165deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            height: 100vh;
+            position: fixed;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-speed);
+            z-index: 1000;
+            overflow: hidden;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -30px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 22px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            transform: rotate(15deg);
+            transition: all 0.5s ease;
+        }
+
+        .logo:hover {
+            transform: rotate(0deg) scale(1.1);
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, var(--text-color), #f5f7fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+            position: relative;
+            z-index: 2;
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .sidebar-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .menu-title {
+            padding: 15px 25px 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .menu-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25px;
+            width: 30px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            margin: 5px 10px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .menu-item:hover::before {
+            left: 100%;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(52, 152, 219, 0.2), transparent);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .menu-item.active i {
+            color: var(--accent-light);
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 18px;
+            color: var(--text-light);
+            transition: all var(--transition-speed);
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-size: 14px;
+            font-weight: 400;
+            transition: all var(--transition-speed);
+        }
+
+        .menu-item:hover i, 
+        .menu-item:hover span {
+            color: white;
+        }
+
+        .menu-item.active span {
+            font-weight: 500;
+            color: white;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all var(--transition-speed);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            background-color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            height: var(--header-height);
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+        }
+
+        .page-title h1 {
+            font-size: 26px;
+            color: var(--primary-color);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), transparent);
+            border-radius: 3px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            padding: 5px 10px;
+            border-radius: 10px;
+        }
+
+        .user-profile:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
+            transition: all var(--transition-speed);
+        }
+
+        .user-profile:hover img {
+            transform: scale(1.1);
+        }
+
+        .user-profile span {
+            font-weight: 500;
+            margin-right: 8px;
+        }
+
+        .user-profile i {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            min-height: calc(100vh - var(--header-height) - 60px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            :root {
+                --sidebar-width: 80px;
+            }
+            .brand-name, .menu-title, .menu-item span {
+                opacity: 0;
+                position: absolute;
+                pointer-events: none;
+            }
+            .menu-item {
+                justify-content: center;
+                padding: 15px 10px;
+                margin: 5px;
+            }
+            .menu-item i {
+                margin-right: 0;
+                font-size: 20px;
+            }
+            .sidebar-header {
+                justify-content: center;
+                padding: 25px 15px;
+            }
+            .logo {
+                margin-right: 0;
+            }
+            .page-title h1 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 70px;
+            }
+            .main-content {
+                padding: 15px;
+            }
+            .header {
+                padding: 0 20px;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">$</div>
+            <div class="brand-name">FinVision</div>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-title">Navigation Principale</div>
+            <div class="menu-item active">
+                <i class="fas fa-chart-pie"></i>
+                <span>Tableau de bord</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-university"></i>
+                <span>Comptes Bancaires</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Transactions</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-users"></i>
+                <span>Gestion Clients</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytiques Financières</span>
+            </div>
+
+            <div class="menu-title">Services Financiers</div>
+            <div class="menu-item">
+                <i class="fas fa-credit-card"></i>
+                <span>Cartes & Crédits</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-percentage"></i>
+                <span>Taux & Investissements</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-hand-holding-usd"></i>
+                <span>Prêts & Hypothèques</span>
+            </div>
+
+            <div class="menu-title">Administration</div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Paramètres Système</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-shield-alt"></i>
+                <span>Sécurité & Conformité</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-headset"></i>
+                <span>Support Premium</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1>Tableau de Bord Financier</h1>
+            </div>
+            <div class="user-profile">
+                <img src="logo.png" alt="Admin">
+                <span>Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+
+        <div class="content">
+            <p style="color: #666; font-size: 16px; line-height: 1.6;">
+                Bienvenue dans votre portail d'administration financière. Cet espace vous permet de gérer l'ensemble des opérations bancaires, de suivre les performances financières et d'administrer les services clients.
+            </p>
+            <!-- Vous pouvez ajouter ici des widgets, graphiques et tableaux -->
+        </div>
+    </div>
+</body>
+</html>
