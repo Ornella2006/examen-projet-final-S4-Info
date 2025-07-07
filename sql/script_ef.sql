@@ -49,6 +49,7 @@ CREATE TABLE Pret_EF (
     dateAccord DATE,                
     interets DECIMAL(15,2) NOT NULL DEFAULT 0.00,
     dateRetourEstimee DATE NOT NULL,
+    tauxAssurance DECIMAL(5,2) NULL, 
     statut ENUM('en_attente', 'accorde', 'refuse', 'rembourse') DEFAULT 'en_attente',
     FOREIGN KEY (idClient) REFERENCES Client_EF(idClient) ON DELETE CASCADE,
     FOREIGN KEY (idTypePret) REFERENCES TypePret_EF(idTypePret) ON DELETE CASCADE,
