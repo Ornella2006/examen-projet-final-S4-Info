@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Clients</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+
+  <h1>Gestion des Clients</h1>
+
+  <div>
+    <input type="hidden" id="idClient">
+    <input type="text" id="nom" placeholder="Nom">
+    <input type="text" id="prenom" placeholder="Prénom">
+    <input type="text" id="adresse" placeholder="Adresse">
+    <input type="text" id="telephone" placeholder="Téléphone">
+    <input type="email" id="email" placeholder="Email">
+    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+    <button onclick="window.print()">Imprimer</button>
+    <button onclick="exportPDF()">Exporter en PDF</button>
+  </div>
+
+  <table id="table-clients">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Adresse</th>
+        <th>Téléphone</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="clients-tbody"></tbody>
+  </table>
+
+  <script>
+    const apiBase = "examen-projet-final-S4-Info/ws";
+
+    function ajax(method, url, data, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          try {
+            const response = JSON.parse(xhr.responseText);
+            callback(response);
+          } catch (e) {
+            console.error("Erreur de décodage de la réponse:", e);
+            alert("Erreur de décodage de la réponse.");
+          }
+        }
+      };
+      xhr.send(data);
+    }
+
+    function chargerClients() {
+      ajax("GET", "", null, (data) => {
+        const tbody = document.querySelector("#clients-tbody");
+        tbody.innerHTML = "";
+        data.forEach(client => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${client.idClient}</td>
+            <td>${client.nom}</td>
+            <td>${client.prenom}</td>
+            <td>${client.adresse}</td>
+            <td>${client.telephone}</td>
+            <td>${client.email}</td>
+            <td>
+              <button onclick='remplirFormulaire(${JSON.stringify(client)})'>✏️</button>
+              <button onclick='supprimerClient(${client.idClient})'>🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    function ajouterOuModifier() {
+      const idClient = document.getElementById("idClient").value;
+      const nom = document.getElementById("nom").value;
+      const prenom = document.getElementById("prenom").value;
+      const adresse = document.getElementById("adresse").value;
+      const telephone = document.getElementById("telephone").value;
+      const email = document.getElementById("email").value;
+
+      const data = `nom=${encodeURIComponent(nom)}&prenom=${encodeURIComponent(prenom)}&adresse=${encodeURIComponent(adresse)}&telephone=${encodeURIComponent(telephone)}&email=${encodeURIComponent(email)}`;
+
+      if (idClient) {
+        ajax("PUT", `?id=${idClient}`, data, (response) => {
+          if (response.success) {
+            resetForm();
+            chargerClients();
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        });
+      } else {
+        ajax("POST", "", data, (response) => {
+          if (response.success) {
+            resetForm();
+            chargerClients();
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        });
+      }
+    }
+
+    function remplirFormulaire(client) {
+      document.getElementById("idClient").value = client.idClient;
+      document.getElementById("nom").value = client.nom;
+      document.getElementById("prenom").value = client.prenom;
+      document.getElementById("adresse").value = client.adresse;
+      document.getElementById("telephone").value = client.telephone;
+      document.getElementById("email").value = client.email;
+    }
+
+    function supprimerClient(idClient) {
+      if (confirm("Supprimer ce client ?")) {
+        ajax("DELETE", `?id=${idClient}`, null, (response) => {
+          if (response.success) {
+            chargerClients();
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        });
+      }
+    }
+
+    function resetForm() {
+      document.getElementById("idClient").value = "";
+      document.getElementById("nom").value = "";
+      document.getElementById("prenom").value = "";
+      document.getElementById("adresse").value = "";
+      document.getElementById("telephone").value = "";
+      document.getElementById("email").value = "";
+    }
+
+    function exportPDF() {
+      window.open('ws/export_clients_pdf.php', '_blank');
+    }
+
+    chargerClients();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Types de Prêt</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+
+  <h1>Gestion des Types de Prêt</h1>
+
+  <div>
+    <input type="hidden" id="id">
+    <input type="text" id="libelle" placeholder="Nom du type de prêt">
+    <input type="number" step="0.01" min="0" id="tauxInteret" placeholder="Taux d'intérêt (%)">
+    <input type="number" min="1" id="dureeMaxMois" placeholder="Durée maximale (mois)">
+    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+  </div>
+
+  <table id="table-types-pret">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Taux d'intérêt (%)</th>
+        <th>Durée max (mois)</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const apiBase = "examen-projet-final-S4-Info/ws";
+
+    function ajax(method, url, data, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          try {
+            const response = unserialize(xhr.responseText);
+            callback(response);
+          } catch (e) {
+            console.error("Erreur de décodage de la réponse:", e);
+            alert("Erreur de décodage de la réponse.");
+          }
+        }
+      };
+      xhr.send(data);
+    }
+
+    function unserialize(data) {
+      if (data.startsWith('a:')) {
+        let obj = {};
+        let matches = [...data.matchAll(/s:(\d+):\"(.*?)\";([a|i|d|b|N|s]:.*?;)/g)];
+        for (let m of matches) {
+          let key = m[2];
+          let val = m[3];
+          if (val.startsWith('s:')) {
+            let v = val.match(/s:(\d+):\"(.*?)\";/);
+            obj[key] = v ? v[2] : '';
+          } else if (val.startsWith('i:')) {
+            let v = val.match(/i:(\d+);/);
+            obj[key] = v ? parseInt(v[1]) : 0;
+          } else if (val.startsWith('d:')) {
+            let v = val.match(/d:([\d.]+);/);
+            obj[key] = v ? parseFloat(v[1]) : 0.0;
+          } else if (val.startsWith('b:')) {
+            obj[key] = val[2] === '1';
+          } else {
+            obj[key] = val;
+          }
+        }
+        return obj;
+      }
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        throw new Error('Format non supporté');
+      }
+    }
+
+    function chargerTypesPret() {
+      ajax("GET", "", null, (data) => {
+        const tbody = document.querySelector("#table-types-pret tbody");
+        tbody.innerHTML = "";
+        data.forEach(tp => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${tp.id}</td>
+            <td>${tp.libelle}</td>
+            <td>${tp.tauxInteret}</td>
+            <td>${tp.dureeMaxMois}</td>
+            <td>
+              <button onclick='remplirFormulaire(${JSON.stringify(tp)})'>✏️</button>
+              <button onclick='supprimerTypePret(${tp.id})'>🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    function ajouterOuModifier() {
+      const id = document.getElementById("id").value;
+      const libelle = document.getElementById("libelle").value;
+      const tauxInteret = document.getElementById("tauxInteret").value;
+      const dureeMaxMois = document.getElementById("dureeMaxMois").value;
+
+      const data = `libelle=${encodeURIComponent(libelle)}&tauxInteret=${tauxInteret}&dureeMaxMois=${dureeMaxMois}`;
+
+      if (id) {
+        ajax("PUT", `?id=${id}`, data, (response) => {
+          if (response.success) {
+            resetForm();
+            chargerTypesPret();
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        });
+      } else {
+        ajax("POST", "", data, (response) => {
+          if (response.success) {
+            resetForm();
+            chargerTypesPret();
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        });
+      }
+    }
+
+    function remplirFormulaire(tp) {
+      document.getElementById("id").value = tp.id;
+      document.getElementById("libelle").value = tp.libelle;
+      document.getElementById("tauxInteret").value = tp.tauxInteret;
+      document.getElementById("dureeMaxMois").value = tp.dureeMaxMois;
+    }
+
+    function supprimerTypePret(id) {
+      if (confirm("Supprimer ce type de prêt ?")) {
+        ajax("DELETE", `?id=${id}`, null, (response) => {
+          if (response.success) {
+            chargerTypesPret();
+            alert(response.message);
+          } else {
+            alert(response.message);
+          }
+        });
+      }
+    }
+
+    function resetForm() {
+      document.getElementById("id").value = "";
+      document.getElementById("libelle").value = "";
+      document.getElementById("tauxInteret").value = "";
+      document.getElementById("dureeMaxMois").value = "";
+    }
+
+    chargerTypesPret();
+  </script>
+
+</body>
+</html>
