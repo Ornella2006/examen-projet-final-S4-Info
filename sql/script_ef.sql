@@ -2,6 +2,15 @@ drop database EF;
 create database EF;
 use EF;
 
+CREATE TABLE Admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    motDePasse VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Admin(nom, motDePasse) VALUES
+('admin','admin123');
+
 CREATE TABLE EtablissementFinancier_EF (
     idEtablissementFinancier INT PRIMARY KEY AUTO_INCREMENT,
     nomEtablissementFinancier VARCHAR(100) NOT NULL,
