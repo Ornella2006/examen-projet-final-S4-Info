@@ -13,6 +13,7 @@ class InteretsEFController {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([':date_debut' => $dateDebut, ':date_fin' => $dateFin]);
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        Flight::render('interets_ef.php', ['data' => $data]);
+        Flight::json($data);
+
     }
 }
