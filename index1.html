@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion des étudiants - Banque Étudiante</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      min-height: 100vh;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-placeholder {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .brand-info h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .brand-info p {
+      font-size: 12px;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .main-content {
+      padding: 40px;
+    }
+
+    .hero-section {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 40px;
+      margin-bottom: 50px;
+      align-items: center;
+    }
+
+    .hero-text h2 {
+      font-size: 36px;
+      color: #1e3c72;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+
+    .illustration-placeholder {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-section {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .menu-title {
+      font-size: 24px;
+      color: #1e3c72;
+      margin-bottom: 30px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .menu-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .menu-card:hover::before {
+      left: 100%;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu-card .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .menu-card a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 18px;
+      display: block;
+    }
+
+    .menu-card .description {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    .stats-section {
+      margin-top: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #667eea;
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #1e3c72;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .footer {
+      background: #1e3c72;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .hero-section {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-text h2 {
+        font-size: 28px;
+      }
+
+      .main-content {
+        padding: 20px;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-section">
+        <div class="logo-placeholder">💰</div>
+        <div class="brand-info">
+          <h1>Banque Service</h1>
+          <p>Gestion financière et Banque</p>
+        </div>
+      </div>
+      <div style="font-size: 14px; opacity: 0.9;">
+        Tableau de bord administrateur
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="hero-section">
+        <div class="hero-text">
+          <h2>Gestion des Services Financiers</h2>
+          <p>Administrez facilement les comptes étudiants, gérez les prêts et suivez les transactions en temps réel avec notre plateforme bancaire dédiée.</p>
+        </div>
+        <div class="illustration-placeholder"><img src="ws/image/illu.png" height="200" width="200"></div>
+      </div>
+
+      <div class="menu-section">
+        <h3 class="menu-title">Menu Principal</h3>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <span class="icon">💳</span>
+            <a href="#">Ajouter des fonds</a>
+            <p class="description">Créditez les comptes étudiants et gérez les dépôts</p>
+          </div>
+          
+          <div class="menu-card">
+            <span class="icon">📋</span>
+            <a href="type_pret_form.html">Créer un type de prêt</a>
+            <p class="description">Configurez de nouveaux produits de prêt étudiant</p>
+          </div>
+          
+          <div class="menu-card">
+            <span class="icon">🤝</span>
+            <a href="pret_form.html">Gérer un prêt client</a>
+            <p class="description">Suivez et administrez les prêts en cours</p>
+          </div>
+
+          <div class="menu-card">
+            <span class="icon">📊</span>
+            <a href="interets_ef.html">Synthèse des intérêts EF</a>
+            <p class="description">Visualisez et gérez les intérêts des emprunts EF</p>
+          </div>
+
+
+
+          <div class="menu-card">
+            <span class="icon">👥</span>
+            <a href="clients_list.html">Liste des clients</a>
+            <p class="description">Voir et exporter la liste des clients</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+
+  </div>
+</body>
+</html>

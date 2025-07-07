@@ -5,7 +5,7 @@
   <title>Gestion des Prêts</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
-    input, button { margin: 5px; padding: 5px; }
+    input, button, select { margin: 5px; padding: 5px; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background-color: #f2f2f2; }
@@ -16,14 +16,20 @@
   <h1>Gestion des Prêts</h1>
 
   <div>
-    <input type="hidden" id="id">
-    <input type="number" id="idClient" placeholder="ID Client">
-    <input type="number" id="idTypePret" placeholder="ID Type de Prêt">
-    <input type="number" step="0.01" id="montant" placeholder="Montant">
-    <input type="number" id="dureeMois" placeholder="Durée (mois)">
-    <input type="date" id="dateDemande" placeholder="Date de demande">
+    <select id="idClient" required>
+      <option value="">Sélectionner un client</option>
+    </select>
+    <select id="idTypePret" required>
+      <option value="">Sélectionner un type de prêt</option>
+    </select>
+    <select id="idEtablissementFinancier" required>
+      <option value="">Sélectionner un établissement</option>
+    </select>
+    <input type="number" step="0.01" id="montant" placeholder="Montant (€)" min="1000" required>
+    <input type="number" id="dureeMois" placeholder="Durée (mois)" min="1" required>
+    <input type="date" id="dateDemande" required>
     <input type="date" id="dateAccord" placeholder="Date d'accord">
-    <input type="date" id="datePremiereEcheance" placeholder="Date 1ère échéance">
+    <input type="number" step="0.01" id="tauxAssurance" placeholder="Taux Assurance (%)" min="0" max="5" value="0">
     <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
   </div>
 
@@ -31,13 +37,19 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>ID Client</th>
-        <th>ID Type de Prêt</th>
-        <th>Montant</th>
+        <th>Client</th>
+        <th>Type de Prêt</th>
+        <th>Montant (€)</th>
         <th>Durée (mois)</th>
+        <th>Intérêts (€)</th>
+        <th>Taux d’intérêt (%)</th>
+        <th>Taux d’assurance (%)</th>
+        <th>Annuité mensuelle (€)</th>
+        <th>Somme totale (€)</th>
         <th>Date Demande</th>
         <th>Date Accord</th>
-        <th>Date 1ère Échéance</th>
+        <th>Date Retour Estimée</th>
+        <th>Statut</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -45,7 +57,7 @@
   </table>
 
   <script>
-    const apiBase = "examen-projet-final-S4-Info/ws";
+    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -54,7 +66,7 @@
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
           try {
-            const response = unserialize(xhr.responseText);
+            const response = JSON.parse(xhr.responseText);
             callback(response);
           } catch (e) {
             console.error("Erreur de décodage de la réponse:", e);
@@ -65,55 +77,69 @@
       xhr.send(data);
     }
 
-    function unserialize(data) {
-      if (data.startsWith('a:')) {
-        let obj = {};
-        let matches = [...data.matchAll(/s:(\d+):\"(.*?)\";([a|i|d|b|N|s]:.*?;)/g)];
-        for (let m of matches) {
-          let key = m[2];
-          let val = m[3];
-          if (val.startsWith('s:')) {
-            let v = val.match(/s:(\d+):\"(.*?)\";/);
-            obj[key] = v ? v[2] : '';
-          } else if (val.startsWith('i:')) {
-            let v = val.match(/i:(\d+);/);
-            obj[key] = v ? parseInt(v[1]) : 0;
-          } else if (val.startsWith('d:')) {
-            let v = val.match(/d:([\d.]+);/);
-            obj[key] = v ? parseFloat(v[1]) : 0.0;
-          } else if (val.startsWith('b:')) {
-            obj[key] = val[2] === '1';
-          } else {
-            obj[key] = val;
-          }
-        }
-        return obj;
-      }
-      try {
-        return JSON.parse(data);
-      } catch (e) {
-        throw new Error('Format non supporté');
-      }
+    function chargerClients() {
+      ajax("GET", "/clients", null, (data) => {
+        const select = document.getElementById("idClient");
+        select.innerHTML = '<option value="">Sélectionner un client</option>';
+        data.forEach(c => {
+          const option = document.createElement("option");
+          option.value = c.idClient;
+          option.textContent = `${c.nom} ${c.prenom} (${c.email})`;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    function chargerTypesPrets() {
+      ajax("GET", "/types-prets", null, (data) => {
+        const select = document.getElementById("idTypePret");
+        select.innerHTML = '<option value="">Sélectionner un type de prêt</option>';
+        data.forEach(t => {
+          const option = document.createElement("option");
+          option.value = t.idTypePret;
+          option.textContent = `${t.libelle} (Taux: ${t.tauxInteret}%, Durée max: ${t.dureeMaxMois} mois)`;
+          select.appendChild(option);
+        });
+      });
+    }
+
+    function chargerEtablissements() {
+      ajax("GET", "/etablissements", null, (data) => {
+        const select = document.getElementById("idEtablissementFinancier");
+        select.innerHTML = '<option value="">Sélectionner un établissement</option>';
+        data.forEach(e => {
+          const option = document.createElement("option");
+          option.value = e.idEtablissementFinancier;
+          option.textContent = `${e.nomEtablissementFinancier} (Solde: ${e.fondTotal} €)`;
+          select.appendChild(option);
+        });
+      });
     }
 
     function chargerPrets() {
-      ajax("GET", "", null, (data) => {
+      ajax("GET", "/prets", null, (data) => {
         const tbody = document.querySelector("#table-prets tbody");
         tbody.innerHTML = "";
         data.forEach(p => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${p.id}</td>
-            <td>${p.idClient}</td>
-            <td>${p.idTypePret}</td>
+            <td>${p.idPret}</td>
+            <td>${p.nom} ${p.prenom}</td>
+            <td>${p.libelle}</td>
             <td>${p.montant}</td>
             <td>${p.dureeMois}</td>
+            <td>${p.interets}</td>
+            <td>${p.tauxInteret}</td>
+            <td>${p.tauxAssurance}</td>
+            <td>${p.annuiteMensuelle}</td>
+            <td>${p.sommeTotaleRembourser}</td>
             <td>${p.dateDemande || ''}</td>
             <td>${p.dateAccord || ''}</td>
-            <td>${p.datePremiereEcheance || ''}</td>
+            <td>${p.dateRetourEstimee || ''}</td>
+            <td>${p.statut}</td>
             <td>
               <button onclick='remplirFormulaire(${JSON.stringify(p)})'>✏️</button>
-              <button onclick='supprimerPret(${p.id})'>🗑️</button>
+              <button onclick='supprimerPret(${p.idPret})'>🗑️</button>
             </td>
           `;
           tbody.appendChild(tr);
@@ -122,54 +148,71 @@
     }
 
     function ajouterOuModifier() {
-      const id = document.getElementById("id").value;
       const idClient = document.getElementById("idClient").value;
       const idTypePret = document.getElementById("idTypePret").value;
+      const idEtablissementFinancier = document.getElementById("idEtablissementFinancier").value;
       const montant = document.getElementById("montant").value;
       const dureeMois = document.getElementById("dureeMois").value;
       const dateDemande = document.getElementById("dateDemande").value;
-      const dateAccord = document.getElementByIdAKA
-      const datePremiereEcheance = document.getElementById("datePremiereEcheance").value;
+      const dateAccord = document.getElementById("dateAccord").value;
+      const tauxAssurance = document.getElementById("tauxAssurance").value;
 
-      const data = `idClient=${encodeURIComponent(idClient)}&idTypePret=${encodeURIComponent(idTypePret)}&montant=${encodeURIComponent(montant)}&dureeMois=${encodeURIComponent(dureeMois)}&dateDemande=${encodeURIComponent(dateDemande)}&dateAccord=${encodeURIComponent(dateAccord)}&datePremiereEcheance=${encodeURIComponent(datePremiereEcheance)}`;
-
-      if (id) {
-        ajax("PUT", `?id=${id}`, data, (response) => {
-          if (response.success) {
-            resetForm();
-            chargerPrets();
-            alert(response.message);
-          } else {
-            alert(response.message);
-          }
-        });
-      } else {
-        ajax("POST", "", data, (response) => {
-          if (response.success) {
-            resetForm();
-            chargerPrets();
-            alert(response.message);
-          } else {
-            alert(response.message);
-          }
-        });
+      if (!idClient) {
+        alert("Sélectionnez un client.");
+        return;
       }
+      if (!idTypePret) {
+        alert("Sélectionnez un type de prêt.");
+        return;
+      }
+      if (!idEtablissementFinancier) {
+        alert("Sélectionnez un établissement.");
+        return;
+      }
+      if (!montant || parseFloat(montant) < 1000) {
+        alert("Le montant doit être supérieur ou égal à 1000 €.");
+        return;
+      }
+      if (!dureeMois || parseInt(dureeMois) <= 0) {
+        alert("La durée doit être un entier positif.");
+        return;
+      }
+      if (!dateDemande) {
+        alert("La date de demande est requise.");
+        return;
+      }
+      if (tauxAssurance && (parseFloat(tauxAssurance) < 0 || parseFloat(tauxAssurance) > 5)) {
+        alert("Le taux d'assurance doit être compris entre 0 et 5%.");
+        return;
+      }
+
+      const data = `idClient=${encodeURIComponent(idClient)}&idTypePret=${encodeURIComponent(idTypePret)}&idEtablissementFinancier=${encodeURIComponent(idEtablissementFinancier)}&montant=${encodeURIComponent(montant)}&dureeMois=${encodeURIComponent(dureeMois)}&dateDemande=${encodeURIComponent(dateDemande)}&dateAccord=${encodeURIComponent(dateAccord)}&tauxAssurance=${encodeURIComponent(tauxAssurance)}`;
+
+      ajax("POST", "/prets", data, (response) => {
+        if (response.success) {
+          resetForm();
+          chargerPrets();
+          alert(response.message);
+        } else {
+          alert(response.message);
+        }
+      });
     }
 
     function remplirFormulaire(p) {
-      document.getElementById("id").value = p.id;
       document.getElementById("idClient").value = p.idClient;
       document.getElementById("idTypePret").value = p.idTypePret;
+      document.getElementById("idEtablissementFinancier").value = p.idEtablissementFinancier;
       document.getElementById("montant").value = p.montant;
       document.getElementById("dureeMois").value = p.dureeMois;
       document.getElementById("dateDemande").value = p.dateDemande;
-      document.getElementById("dateAccord").value = p.dateAccord;
-      document.getElementById("datePremiereEcheance").value = p.datePremiereEcheance;
+      document.getElementById("dateAccord").value = p.dateAccord || '';
+      document.getElementById("tauxAssurance").value = p.tauxAssurance;
     }
 
     function supprimerPret(id) {
       if (confirm("Supprimer ce prêt ?")) {
-        ajax("DELETE", `?id=${id}`, null, (response) => {
+        ajax("DELETE", `/prets/${id}`, null, (response) => {
           if (response.success) {
             chargerPrets();
             alert(response.message);
@@ -181,16 +224,19 @@
     }
 
     function resetForm() {
-      document.getElementById("id").value = "";
       document.getElementById("idClient").value = "";
       document.getElementById("idTypePret").value = "";
+      document.getElementById("idEtablissementFinancier").value = "";
       document.getElementById("montant").value = "";
       document.getElementById("dureeMois").value = "";
       document.getElementById("dateDemande").value = "";
       document.getElementById("dateAccord").value = "";
-      document.getElementById("datePremiereEcheance").value = "";
+      document.getElementById("tauxAssurance").value = "0";
     }
 
+    chargerClients();
+    chargerTypesPrets();
+    chargerEtablissements();
     chargerPrets();
   </script>
 

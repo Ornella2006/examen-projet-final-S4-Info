@@ -14,24 +14,29 @@ class Utils {
     }
 
    
-    public static function genererTableauAmortissement($montant, $tauxAnnuel, $nbMois, $dateDebut) {
+   public static function genererTableauAmortissement($montant, $tauxInteret, $dureeMois, $datePremiereEcheance) {
         $tableau = [];
-        $mensualite = self::calculMensualite($montant, $tauxAnnuel, $nbMois);
+        $tauxMensuel = $tauxInteret / 100 / 12;
+        $puissance = pow(1 + $tauxMensuel, $dureeMois);
+        $annuite = $montant * $tauxMensuel * $puissance / ($puissance - 1);
+        
         $capitalRestant = $montant;
-        $date = new DateTime($dateDebut);
-        for ($i = 1; $i <= $nbMois; $i++) {
-            $interet = $capitalRestant * ($tauxAnnuel / 12 / 100);
-            $principal = $mensualite - $interet;
-            if ($i == $nbMois) $principal = $capitalRestant; 
+        $date = new DateTime($datePremiereEcheance);
+        
+        for ($i = 0; $i < $dureeMois; $i++) {
+            $interet = $capitalRestant * $tauxMensuel;
+            $capitalRembourse = $annuite - $interet;
+            $capitalRestant -= $capitalRembourse;
+            
             $tableau[] = [
-                'date_remboursement' => $date->format('Y-m-d'),
-                'montant' => round($mensualite, 2),
+                'montant' => round($capitalRembourse, 2),
                 'interet' => round($interet, 2),
-                'principal' => round($principal, 2)
+                'date_remboursement' => $date->format('Y-m-d')
             ];
-            $capitalRestant -= $principal;
+            
             $date->modify('+1 month');
         }
+        
         return $tableau;
     }
 }

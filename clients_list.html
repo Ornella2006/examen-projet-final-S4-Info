@@ -43,7 +43,7 @@
   </table>
 
   <script>
-    const apiBase = "examen-projet-final-S4-Info/ws";
+    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
 
     function ajax(method, url, data, callback) {
       const xhr = new XMLHttpRequest();
@@ -64,7 +64,7 @@
     }
 
     function chargerClients() {
-      ajax("GET", "", null, (data) => {
+      ajax("GET", "/clients", null, (data) => {
         const tbody = document.querySelector("#clients-tbody");
         tbody.innerHTML = "";
         data.forEach(client => {
@@ -73,8 +73,8 @@
             <td>${client.idClient}</td>
             <td>${client.nom}</td>
             <td>${client.prenom}</td>
-            <td>${client.adresse}</td>
-            <td>${client.telephone}</td>
+            <td>${client.adresse || ''}</td>
+            <td>${client.telephone || ''}</td>
             <td>${client.email}</td>
             <td>
               <button onclick='remplirFormulaire(${JSON.stringify(client)})'>✏️</button>
@@ -97,7 +97,7 @@
       const data = `nom=${encodeURIComponent(nom)}&prenom=${encodeURIComponent(prenom)}&adresse=${encodeURIComponent(adresse)}&telephone=${encodeURIComponent(telephone)}&email=${encodeURIComponent(email)}`;
 
       if (idClient) {
-        ajax("PUT", `?id=${idClient}`, data, (response) => {
+        ajax("PUT", `/clients/${idClient}`, data, (response) => {
           if (response.success) {
             resetForm();
             chargerClients();
@@ -107,7 +107,7 @@
           }
         });
       } else {
-        ajax("POST", "", data, (response) => {
+        ajax("POST", "/clients", data, (response) => {
           if (response.success) {
             resetForm();
             chargerClients();
@@ -123,14 +123,14 @@
       document.getElementById("idClient").value = client.idClient;
       document.getElementById("nom").value = client.nom;
       document.getElementById("prenom").value = client.prenom;
-      document.getElementById("adresse").value = client.adresse;
-      document.getElementById("telephone").value = client.telephone;
+      document.getElementById("adresse").value = client.adresse || '';
+      document.getElementById("telephone").value = client.telephone || '';
       document.getElementById("email").value = client.email;
     }
 
     function supprimerClient(idClient) {
       if (confirm("Supprimer ce client ?")) {
-        ajax("DELETE", `?id=${idClient}`, null, (response) => {
+        ajax("DELETE", `/clients/${idClient}`, null, (response) => {
           if (response.success) {
             chargerClients();
             alert(response.message);
@@ -151,7 +151,7 @@
     }
 
     function exportPDF() {
-      window.open('ws/export_clients_pdf.php', '_blank');
+      window.open('/examen-projet-final-S4-Info/ws/export_clients_pdf.php', '_blank');
     }
 
     chargerClients();

@@ -1,0 +1,31 @@
+{
+    "type": "bar",
+    "data": {
+      "labels": [],
+      "datasets": [{
+        "label": "Intérêts gagnés (€)",
+        "data": [],
+        "backgroundColor": "rgba(54, 162, 235, 0.5)",
+        "borderColor": "rgba(54, 162, 235, 1)",
+        "borderWidth": 1
+      }]
+    },
+    "options": {
+      "responsive": true,
+      "scales": {
+        "y": {
+          "beginAtZero": true,
+          "title": {
+            "display": true,
+            "text": "Intérêts (€)"
+          }
+        },
+        "x": {
+          "title": {
+            "display": true,
+            "text": "Période"
+          }
+        }
+      }
+    }
+  }
