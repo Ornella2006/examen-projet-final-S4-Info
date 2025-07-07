@@ -1,14 +1,14 @@
 create database EF;
 use EF;
 
-CREATE TABLE EtablissementFinancier (
+CREATE TABLE EtablissementFinancier_EF (
     idEtablissementFinancier INT PRIMARY KEY AUTO_INCREMENT,
     nomEtablissementFinancier VARCHAR(100) NOT NULL,
     fondTotal DECIMAL(15,2) NOT NULL DEFAULT 0.00,
     dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE AjoutFonds (
+CREATE TABLE AjoutFonds_EF (
     idAjoutFonds INT PRIMARY KEY AUTO_INCREMENT,
     idEtablissementFinancier INT,
     montant DECIMAL(15,2) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE AjoutFonds (
     dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE TypePret (
+CREATE TABLE TypePret_EF (
     idTypePret INT PRIMARY KEY AUTO_INCREMENT,
     libelle VARCHAR(100) NOT NULL,
     tauxInteret DECIMAL(5,2) NOT NULL, 
@@ -25,7 +25,7 @@ CREATE TABLE TypePret (
     dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE Client (
+CREATE TABLE Client_EF (
     idClient INT PRIMARY KEY AUTO_INCREMENT,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE Client (
 
 );
 
-CREATE TABLE Pret (
+CREATE TABLE Pret_EF (
     idPret INT PRIMARY KEY AUTO_INCREMENT,
     idClient INT,
     idTypePret INT,
