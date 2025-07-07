@@ -159,7 +159,6 @@ class Pret {
             return $stmt->rowCount();
         } catch (PDOException $e) {
             $db->rollBack();
-            // error deriveError: function(error) { document.getElementById("error-message").textContent = `Erreur lors de la validation: ${error}`; } } } catch (Exception $e) {
             error_log("Erreur SQL dans valider: " . $e->getMessage());
             throw new Exception("Erreur lors de la validation du prêt: " . $e->getMessage());
         }
@@ -169,12 +168,49 @@ class Pret {
         $db = getDB();
         error_log("Récupération de tous les prêts");
         $stmt = $db->query("
-            SELECT p.*, t.libelle, c.nom, c.prenom 
-            FROM Pret_EF p 
-            JOIN TypePret_EF t ON p.idTypePret = t.idTypePret 
-            JOIN Client_EF c ON p.idClient = c.idClient
+            SELECT 
+                p.idPret,
+                p.idClient,
+                p.idTypePret,
+                p.idEtablissementFinancier,
+                p.montant,
+                p.dureeMois,
+                p.dateDemande,
+                p.dateRetourEstimee,
+                p.interets,
+                p.statut,
+                p.tauxAssurance,
+                t.libelle,
+                t.tauxInteret,
+                c.nom,
+                c.prenom
+            FROM 
+                Pret_EF p
+            JOIN 
+                TypePret_EF t ON p.idTypePret = t.idTypePret
+            JOIN 
+                Client_EF c ON p.idClient = c.idClient
         ");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $prets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($prets as &$pret) {
+            $tauxEffectifMensuel = ($pret['tauxInteret'] + $pret['tauxAssurance']) / 100 / 12;
+            $n = $pret['dureeMois'];
+            $montant = $pret['montant'];
+
+            if ($tauxEffectifMensuel > 0) {
+                $puissance = pow(1 + $tauxEffectifMensuel, $n);
+                $annuiteMensuelle = $montant * ($tauxEffectifMensuel * $puissance) / ($puissance - 1);
+            } else {
+                $annuiteMensuelle = $montant / $n;
+            }
+            $pret['annuiteMensuelle'] = round($annuiteMensuelle, 2);
+            $pret['sommeTotaleRembourser'] = round($annuiteMensuelle * $n, 2);
+            $pret['tauxInteretAnnuel'] = $pret['tauxInteret'];
+            unset($pret['tauxInteret']);
+        }
+
+        return $prets;
     }
 
     public static function simuler($data) {
@@ -228,5 +264,3 @@ class Pret {
         ];
     }
 }
-
-
