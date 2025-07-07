@@ -31,6 +31,7 @@
     <input type="number" id="montant" placeholder="Montant (€)" step="100" min="1000" required>
     <input type="number" id="dureeMois" placeholder="Durée (mois)" min="1" required>
     <input type="date" id="dateDemande" required>
+    <input type="number" id="tauxAssurance" placeholder="Taux Assurance (%)" step="0.01" min="0" max="5" value="0">
     <button onclick="creerPret()">Créer le prêt</button>
     <p id="error-message" class="error"></p>
     <p id="success-message" class="success"></p>
@@ -46,6 +47,7 @@
         <th>Montant (€)</th>
         <th>Durée (mois)</th>
         <th>Intérêts (€)</th>
+        <th>Taux Assurance (%)</th>
         <th>Date de demande</th>
         <th>Date de retour estimée</th>
         <th>Statut</th>
@@ -108,7 +110,7 @@
     function chargerEtablissements() {
       ajax("GET", "/etablissements", null, (data) => {
         const select = document.getElementById("idEtablissementFinancier");
-        select.innerHTML = '<option value="">Sélectionner un établissement</option>';
+        select.innerHTML = '<Hosted on GitHub? <option value="">Sélectionner un établissement</option>';
         data.forEach(e => {
           const option = document.createElement("option");
           option.value = e.idEtablissementFinancier;
@@ -127,6 +129,7 @@
       const montant = document.getElementById("montant").value;
       const dureeMois = document.getElementById("dureeMois").value;
       const dateDemande = document.getElementById("dateDemande").value;
+      const tauxAssurance = document.getElementById("tauxAssurance").value;
 
       if (!idClient) {
         document.getElementById("error-message").textContent = "Sélectionnez un client.";
@@ -154,9 +157,14 @@
         document.getElementById("error-message").textContent = "La date de demande est requise.";
         return;
       }
+      const parsedTauxAssurance = parseFloat(tauxAssurance) || 0;
+      if (tauxAssurance !== "" && (parsedTauxAssurance < 0 || parsedTauxAssurance > 5)) {
+        document.getElementById("error-message").textContent = "Le taux d'assurance doit être compris entre 0 et 5%.";
+        return;
+      }
 
-      const data = `idClient=${idClient}&idTypePret=${idTypePret}&idEtablissementFinancier=${idEtablissementFinancier}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&dateDemande=${dateDemande}`;
-      console.log("Valeurs avant envoi:", { idClient, idTypePret, idEtablissementFinancier, montant: parsedMontant, dureeMois: parsedDureeMois, dateDemande });
+      const data = `idClient=${idClient}&idTypePret=${idTypePret}&idEtablissementFinancier=${idEtablissementFinancier}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&dateDemande=${dateDemande}&tauxAssurance=${parsedTauxAssurance}`;
+      console.log("Valeurs avant envoi:", { idClient, idTypePret, idEtablissementFinancier, montant: parsedMontant, dureeMois: parsedDureeMois, dateDemande, tauxAssurance: parsedTauxAssurance });
 
       ajax("POST", "/prets", data, (response) => {
         document.getElementById("success-message").textContent = `Prêt créé avec l'ID ${response.id}. Cliquez sur Valider pour confirmer.`;
@@ -195,6 +203,7 @@
             <th>Montant (€)</th>
             <th>Durée (mois)</th>
             <th>Intérêts (€)</th>
+            <th>Taux Assurance (%)</th>
             <th>Date de demande</th>
             <th>Date de retour estimée</th>
             <th>Statut</th>
@@ -212,6 +221,7 @@
             <td>${p.montant}</td>
             <td>${p.dureeMois}</td>
             <td>${p.interets}</td>
+            <td>${p.tauxAssurance}</td>
             <td>${p.dateDemande}</td>
             <td>${p.dateRetourEstimee}</td>
             <td>${p.statut}</td>
@@ -231,6 +241,7 @@
       document.getElementById("montant").value = "";
       document.getElementById("dureeMois").value = "";
       document.getElementById("dateDemande").value = "";
+      document.getElementById("tauxAssurance").value = "0";
       document.getElementById("error-message").textContent = "";
       document.getElementById("success-message").textContent = "";
     }

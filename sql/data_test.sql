@@ -16,3 +16,4 @@ INSERT INTO Client_EF (nom, prenom, email, actif) VALUES
     ('Dupont', 'Jean', 'jean.dupont@example.com', 1),
     ('Martin', 'Sophie', 'sophie.martin@example.com', 1),
     ('Sanctionné', 'Paul', 'paul.sanctionne@example.com', 0);
+
