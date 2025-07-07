@@ -1,0 +1,109 @@
+etablissemenet financier => depot, non pret => fond
+
+gestion pret client {
+    client fait un pret dans etablissemenet financier
+    
+}
+
+
+-------------------------------------------------------------------------------
+-------------------------------
+FONCTIONNALITE 1 : Ajouter des fonds à l’établissement
+-------------------------------
+
+Titre : Approvisionner un établissement financier
+Utilisateur : administrateur (ou agent de banque autorisé)
+
+Entrées :
+- Montant à ajouter
+- Date d’opération (optionnelle)
+
+SCENARIO NOMINAL :
+1. Connexion d’un utilisateur autorisé
+2. Accès au formulaire "Ajouter fonds"
+3. Saisie du montant à ajouter
+4. Clic sur Valider
+5. Le solde de l’établissement est mis à jour
+6. Un message de confirmation s’affiche
+
+SCENARIO ALTERNATIF :
+- Montant non saisi ou invalide → Message d’erreur
+- Accès non autorisé → Redirection
+- Erreur base de données → Message d’échec
+
+RESULTAT :
+- Le nouveau solde est enregistré dans la base
+
+REGLES DE GESTION :
+- Montant > 0
+- Utilisateur connecté
+- Établissement identifié
+
+-------------------------------
+FONCTIONNALITE 2 : Créer un type de prêt
+-------------------------------
+
+Titre : Enregistrer un nouveau type de prêt
+Utilisateur : administrateur ou agent
+
+Entrées :
+- Nom / libellé du type de prêt
+- Taux d’intérêt
+- Durée par défaut
+
+SCENARIO NOMINAL :
+1. Accès au formulaire "Type de prêt"
+2. L’agent saisit le nom, taux et durée
+3. Valider
+4. Type de prêt enregistré dans la base
+
+SCENARIO ALTERNATIF :
+- Taux ou nom manquant → Message d’erreur
+- Format taux invalide → Erreur
+- Nom déjà existant → Refus ou alerte
+
+RESULTAT :
+- Type de prêt disponible pour les clients
+
+REGLES DE GESTION :
+- Taux ≥ 0
+- Nom obligatoire, unique
+- Lien possible avec les prêts
+
+-------------------------------
+FONCTIONNALITE 3 : Gérer un prêt client
+-------------------------------
+
+Titre : Attribuer un prêt à un client
+Utilisateur : agent ou gestionnaire
+
+Entrées :
+- Identifiant du client
+- Type de prêt choisi
+- Montant du prêt demandé
+- Date du prêt
+
+SCENARIO NOMINAL :
+1. Accès à la page "Nouveau prêt"
+2. Sélection du client
+3. Choix du type de prêt
+4. Saisie du montant
+5. Clic sur valider
+6. Prêt enregistré avec données complètes
+
+SCENARIO ALTERNATIF :
+- Client inexistant → Erreur
+- Type de prêt manquant → Erreur
+- Montant trop élevé → Refus
+- Client sanctionné → Refus du prêt
+
+RESULTAT :
+- Le prêt est enregistré dans la base
+- Solde de l’établissement diminué (si pris en compte)
+
+REGLES DE GESTION :
+- Client doit exister et être actif
+- Type de prêt valide
+- Montant > 0 et ≤ solde disponible
+- Calcul intérêt = montant × (taux / 100)
+- Date retour estimée = Date + durée (du type de prêt)
