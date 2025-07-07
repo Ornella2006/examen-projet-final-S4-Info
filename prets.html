@@ -46,8 +46,11 @@
         <th>Montant (€)</th>
         <th>Durée (mois)</th>
         <th>Intérêts (€)</th>
+        <th>Taux d’intérêt (%)</th>
+        <th>Annuité mensuelle (€)</th>
+        <th>Somme totale à rembourser (€)</th>
         <th>Date de demande</th>
-        <th>Date de retour estimée</th>
+        <th>Date de fin de remboursement</th>
         <th>Statut</th>
         <th class="actions-column">Actions</th>
       </tr>
@@ -56,7 +59,7 @@
   </table>
 
   <script>
-    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
+    const apiBase = "http://localhost/L2/S4/projet_final_S4/examen-projet-final-S4-Info/ws";
 
     function ajax(method, url, data, callback, errorCallback) {
       const xhr = new XMLHttpRequest();
@@ -195,8 +198,11 @@
             <th>Montant (€)</th>
             <th>Durée (mois)</th>
             <th>Intérêts (€)</th>
+            <th>Taux d’intérêt (%)</th>
+            <th>Annuité mensuelle (€)</th>
+            <th>Somme totale à rembourser (€)</th>
             <th>Date de demande</th>
-            <th>Date de retour estimée</th>
+            <th>Date de fin de remboursement</th>
             <th>Statut</th>
             ${hasPendingLoans ? '<th class="actions-column">Actions</th>' : ''}
           </tr>
@@ -212,6 +218,9 @@
             <td>${p.montant}</td>
             <td>${p.dureeMois}</td>
             <td>${p.interets}</td>
+            <td>${p.tauxInteretAnnuel}</td>
+            <td>${p.annuiteMensuelle}</td>
+            <td>${p.sommeTotaleRembourser}</td>
             <td>${p.dateDemande}</td>
             <td>${p.dateRetourEstimee}</td>
             <td>${p.statut}</td>

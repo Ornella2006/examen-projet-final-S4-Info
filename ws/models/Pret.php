@@ -5,7 +5,6 @@ class Pret {
     public static function create($data) {
         $db = getDB();
         
-        // Vérifier si le client existe et est actif
         $stmt = $db->prepare("SELECT actif FROM Client_EF WHERE idClient = ?");
         $stmt->execute([$data->idClient]);
         $client = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -16,7 +15,6 @@ class Pret {
             throw new Exception("Client sanctionné ou inactif.");
         }
 
-        // Vérifier si le type de prêt existe
         $stmt = $db->prepare("SELECT tauxInteret, dureeMaxMois FROM TypePret_EF WHERE idTypePret = ?");
         $stmt->execute([$data->idTypePret]);
         $typePret = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -24,12 +22,10 @@ class Pret {
             throw new Exception("Type de prêt invalide.");
         }
 
-        // Vérifier la durée
         if ($data->dureeMois > $typePret['dureeMaxMois']) {
             throw new Exception("La durée dépasse la durée maximale autorisée.");
         }
 
-        // Vérifier le solde de l'établissement
         $stmt = $db->prepare("SELECT fondTotal FROM EtablissementFinancier_EF WHERE idEtablissementFinancier = ?");
         $stmt->execute([$data->idEtablissementFinancier]);
         $etablissement = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -40,10 +36,8 @@ class Pret {
             throw new Exception("Montant supérieur au solde disponible.");
         }
 
-        // Calculer les intérêts
         $interets = $data->montant * ($typePret['tauxInteret'] / 100);
 
-        // Calculer la date de retour estimée
         $dateRetourEstimee = date('Y-m-d', strtotime($data->dateDemande . ' + ' . $data->dureeMois . ' months'));
 
         try {
@@ -73,7 +67,6 @@ class Pret {
     public static function valider($id) {
         $db = getDB();
         
-        // Récupérer les informations du prêt
         $stmt = $db->prepare("
             SELECT p.montant, p.idEtablissementFinancier, p.statut 
             FROM Pret_EF p 
@@ -88,7 +81,6 @@ class Pret {
             throw new Exception("Le prêt n'est pas en attente de validation.");
         }
 
-        // Vérifier le solde de l'établissement
         $stmt = $db->prepare("SELECT fondTotal FROM EtablissementFinancier_EF WHERE idEtablissementFinancier = ?");
         $stmt->execute([$pret['idEtablissementFinancier']]);
         $etablissement = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -99,7 +91,7 @@ class Pret {
         try {
             $db->beginTransaction();
 
-            // Mettre à jour le prêt
+
             $stmt = $db->prepare("
                 UPDATE Pret_EF 
                 SET statut = 'accorde', dateAccord = CURDATE() 
@@ -107,7 +99,6 @@ class Pret {
             ");
             $stmt->execute([$id]);
 
-            // Mettre à jour le solde de l'établissement
             $stmt = $db->prepare("
                 UPDATE EtablissementFinancier_EF 
                 SET fondTotal = fondTotal - ? 
@@ -127,11 +118,47 @@ class Pret {
     public static function getAll() {
         $db = getDB();
         $stmt = $db->query("
-            SELECT p.*, t.libelle, c.nom, c.prenom 
-            FROM Pret_EF p 
-            JOIN TypePret_EF t ON p.idTypePret = t.idTypePret 
-            JOIN Client_EF c ON p.idClient = c.idClient
+            SELECT 
+                p.idPret,
+                p.idClient,
+                p.idTypePret,
+                p.idEtablissementFinancier,
+                p.montant,
+                p.dureeMois,
+                p.dateDemande,
+                p.dateRetourEstimee,
+                p.interets,
+                p.statut,
+                t.libelle,
+                t.tauxInteret,
+                c.nom,
+                c.prenom
+            FROM 
+                Pret_EF p
+            JOIN 
+                TypePret_EF t ON p.idTypePret = t.idTypePret
+            JOIN 
+                Client_EF c ON p.idClient = c.idClient
         ");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $prets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($prets as &$pret) {
+            $tauxMensuel = $pret['tauxInteret'] / 100 / 12;
+            $n = $pret['dureeMois'];
+            $montant = $pret['montant'];
+
+            if ($tauxMensuel > 0) {
+                $annuiteMensuelle = $montant * ($tauxMensuel * pow(1 + $tauxMensuel, $n)) / (pow(1 + $tauxMensuel, $n) - 1);
+            } else {
+                $annuiteMensuelle = $montant / $n;
+            }
+            $pret['annuiteMensuelle'] = round($annuiteMensuelle, 2);
+            $pret['tauxInteretAnnuel'] = $pret['tauxInteret'];
+            $pret['sommeTotaleRembourser'] = round($annuiteMensuelle * $n, 2);
+
+            unset($pret['tauxInteret']);
+        }
+
+        return $prets;
     }
 }
