@@ -1,0 +1,6 @@
+Cas de test	idClient	idTypePret	idEtablissement	Montant (€)	Durée (mois)	Taux Assurance (%)	Date Demande	Taux Intérêt (%)	Intérêts Attendues (€)	Coût Total Attendu (€)	Statut Initial	Action	Statut Final	FondTotal Avant (€)	FondTotal Après (€)	Résultat Attendu	Résultat Observé
+Cas 1: Prêt standard	1	1	4	10000	36	0.5	2025-07-07	5.5	951.92	10951.92	en_attente	Créer, Valider	accorde	1000000	990000	Prêt créé (idPret=X), validé, fondTotal réduit	
+Cas 2: Montant trop élevé	1	1	4	2000000	36	0.5	2025-07-07	5.5	-	-	-	Créer	-	1000000	1000000	Erreur: Montant > fondTotal	
+Cas 3: Durée excessive	1	1	4	10000	60	0.5	2025-07-07	5.5	-	-	-	Créer	-	1000000	1000000	Erreur: Durée > dureeMaxMois	
+Cas 4: Client inactif	2	1	4	10000	36	0.5	2025-07-07	5.5	-	-	-	Créer	-	1000000	1000000	Erreur: Client inactif	
+Cas 5: Taux assurance invalide	1	1	4	10000	36	6	2025-07-07	5.5	-	-	-	Créer	-	1000000	1000000	Erreur: Taux assurance > 5%	
