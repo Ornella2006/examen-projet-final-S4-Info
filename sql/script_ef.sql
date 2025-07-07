@@ -1,3 +1,4 @@
+drop database EF;
 create database EF;
 use EF;
 
@@ -13,7 +14,7 @@ CREATE TABLE AjoutFonds_EF (
     idEtablissementFinancier INT,
     montant DECIMAL(15,2) NOT NULL,
     dateAjout DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (idEtablissementFinancier) REFERENCES EtablissementFinancier(idEtablissementFinancier),
+    FOREIGN KEY (idEtablissementFinancier) REFERENCES EtablissementFinancier_EF(idEtablissementFinancier),
     dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -45,8 +46,8 @@ CREATE TABLE Pret_EF (
     dateDemande DATE NOT NULL,
     dateAccord DATE,                    
     statut ENUM('en_attente', 'accorde', 'refuse', 'rembourse') DEFAULT 'en_attente',
-    FOREIGN KEY (idClient) REFERENCES Client(idClient) ON DELETE CASCADE,
-    FOREIGN KEY (idTypePret) REFERENCES TypePret(idTypePret) ON DELETE CASCADE
+    FOREIGN KEY (idClient) REFERENCES Client_EF(idClient) ON DELETE CASCADE,
+    FOREIGN KEY (idTypePret) REFERENCES TypePret_EF(idTypePret) ON DELETE CASCADE
 );
 
 -- CREATE TABLE Remboursement (
