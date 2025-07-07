@@ -5,6 +5,7 @@ require 'db.php';
 require 'routes/type_pret_routes.php';
 require 'routes/interets_ef_routes.php';
 require 'routes/pret_routes.php';
+require 'routes/client_routes.php';
 
 
 Flight::start();
