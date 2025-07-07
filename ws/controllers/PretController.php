@@ -40,6 +40,13 @@ class PretController {
             Flight::json(['error' => 'Date de demande requise'], 400);
             return;
         }
+        // Valider le taux d'assurance
+        $tauxAssurance = isset($data->tauxAssurance) ? floatval($data->tauxAssurance) : 0.00;
+        if ($tauxAssurance < 0 || $tauxAssurance > 5) {
+            error_log("Erreur: tauxAssurance invalide");
+            Flight::json(['error' => 'Le taux d\'assurance doit être compris entre 0 et 5%'], 400);
+            return;
+        }
 
         try {
             $id = Pret::create($data);
@@ -70,3 +77,4 @@ class PretController {
         Flight::json($prets);
     }
 }
+    ?>
