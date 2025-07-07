@@ -1,0 +1,6 @@
+etablissemenet financier => depot, non pret => fond
+
+gestion pret client {
+    client fait un pret dans etablissemenet financier
+    
+}
