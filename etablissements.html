@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des établissements financiers</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+
+  <h1>Gestion des établissements financiers</h1>
+
+  <div>
+    <input type="hidden" id="idEtablissementFinancier">
+    <input type="text" id="nomEtablissementFinancier" placeholder="Nom de l'établissement">
+    <input type="number" id="fondTotal" placeholder="Fonds total" step="0.01" min="0">
+    <button onclick="ajouterOuModifier()">Ajouter / Modifier</button>
+    <p id="error-message" class="error"></p>
+  </div>
+
+  <table id="table-etablissements">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Fonds total</th>
+        <th>Date de création</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
+
+    function ajax(method, url, data, callback, errorCallback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            callback(JSON.parse(xhr.responseText));
+          } else {
+            errorCallback(xhr.status, xhr.responseText);
+          }
+        }
+      };
+      xhr.send(data);
+    }
+
+    function chargerEtablissements() {
+      ajax("GET", "/etablissements", null, (data) => {
+        const tbody = document.querySelector("#table-etablissements tbody");
+        tbody.innerHTML = "";
+        data.forEach(e => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${e.idEtablissementFinancier}</td>
+            <td>${e.nomEtablissementFinancier}</td>
+            <td>${e.fondTotal}</td>
+            <td>${e.dateCreation}</td>
+            <td>
+              <button onclick='remplirFormulaire(${JSON.stringify(e)})'>✏️</button>
+              <button onclick='supprimerEtablissement(${e.idEtablissementFinancier})'>🗑️</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }, (status, error) => {
+        document.getElementById("error-message").textContent = `Erreur de chargement: ${error}`;
+      });
+    }
+
+    function ajouterOuModifier() {
+      const id = document.getElementById("idEtablissementFinancier").value;
+      const nom = document.getElementById("nomEtablissementFinancier").value.trim();
+      const fondTotal = parseFloat(document.getElementById("fondTotal").value);
+
+      // Validation des champs
+      if (!nom) {
+        document.getElementById("error-message").textContent = "Le nom de l'établissement est requis.";
+        return;
+      }
+      if (isNaN(fondTotal) || fondTotal < 0) {
+        document.getElementById("error-message").textContent = "Le fonds total doit être un nombre positif.";
+        return;
+      }
+
+      const data = `nomEtablissementFinancier=${encodeURIComponent(nom)}&fondTotal=${fondTotal}`;
+
+      if (id) {
+        ajax("PUT", `/etablissements/${id}`, data, () => {
+          resetForm();
+          chargerEtablissements();
+          document.getElementById("error-message").textContent = "";
+        }, (status, error) => {
+          document.getElementById("error-message").textContent = `Erreur lors de la modification: ${error}`;
+        });
+      } else {
+        ajax("POST", "/etablissements", data, () => {
+          resetForm();
+          chargerEtablissements();
+          document.getElementById("error-message").textContent = "";
+        }, (status, error) => {
+          document.getElementById("error-message").textContent = `Erreur lors de l'ajout: ${error}`;
+        });
+      }
+    }
+
+    function remplirFormulaire(e) {
+      document.getElementById("idEtablissementFinancier").value = e.idEtablissementFinancier;
+      document.getElementById("nomEtablissementFinancier").value = e.nomEtablissementFinancier;
+      document.getElementById("fondTotal").value = parseFloat(e.fondTotal).toFixed(2);
+    }
+
+    function supprimerEtablissement(id) {
+      if (confirm("Supprimer cet établissement financier ?")) {
+        ajax("DELETE", `/etablissements/${id}`, null, () => {
+          chargerEtablissements();
+          document.getElementById("error-message").textContent = "";
+        }, (status, error) => {
+          document.getElementById("error-message").textContent = `Erreur lors de la suppression: ${error}`;
+        });
+      }
+    }
+
+    function resetForm() {
+      document.getElementById("idEtablissementFinancier").value = "";
+      document.getElementById("nomEtablissementFinancier").value = "";
+      document.getElementById("fondTotal").value = "";
+      document.getElementById("error-message").textContent = "";
+    }
+
+    chargerEtablissements();
+  </script>
+
+</body>
+</html>
