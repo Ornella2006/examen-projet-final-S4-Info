@@ -41,7 +41,7 @@
     function fetchInterets() {
       const debut = document.getElementById('debut').value;
       const fin = document.getElementById('fin').value;
-      fetch(`examen-projet-final-S4-Info/ws?debut=${debut}&fin=${fin}`)
+      fetch(`/examen-projet-final-S4-Info/ws?debut=${debut}&fin=${fin}`)
         .then(r => r.json())
         .then(data => {
           const tbody = document.getElementById('interets-tbody');
