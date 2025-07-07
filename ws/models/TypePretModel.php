@@ -38,5 +38,12 @@ class TypePretModel {
             return ['success' => false, 'message' => 'Erreur lors de l\'enregistrement : ' . $e->getMessage()];
         }
     }
+
+    
+    public function getTypePretById($idTypePret) {
+        $stmt = $this->pdo->prepare("SELECT * FROM TypePret_EF WHERE idTypePret = ?");
+        $stmt->execute([$idTypePret]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

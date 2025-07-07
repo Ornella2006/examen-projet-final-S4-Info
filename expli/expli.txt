@@ -110,7 +110,7 @@ REGLES DE GESTION :
 
 
 simultaion remboursement
-1000 <= inserer dans la base par mois
+exemple : 1000 <= inserer dans la base par mois
 inserer par mois les tableaux de remboursement
 mensualité constante
 specifier dans sujet
@@ -121,7 +121,7 @@ stocker {
 }
 
 tab de remboursement => supposer tjrs payer => a inserer
-et apres si on veut voir combein est son interface_exists
+et apres si on veut voir combien est son interface_exists
 etape 4 => simulation, doit tester le calcul sans pour autant que c'est deja ca
 et apres on pourrait savoir si ca marche si je change avec autre chose => etablissement financier
 
