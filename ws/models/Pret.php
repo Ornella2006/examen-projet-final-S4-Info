@@ -62,10 +62,14 @@ class Pret {
             throw new Exception("Le taux d'assurance doit être compris entre 0 et 5%.");
         }
 
-        // Calculer les intérêts (incluant l'assurance)
-        $tauxEffectif = $typePret['tauxInteret'] + $tauxAssurance;
-        $interets = $data->montant * ($tauxEffectif / 100);
-        error_log("Intérêts calculés (avec assurance): {$interets}");
+        // Calculer les intérêts avec l'annuité constante
+        $tauxEffectifMensuel = ($typePret['tauxInteret'] + $tauxAssurance) / 100 / 12;
+        $montant = floatval($data->montant);
+        $dureeMois = intval($data->dureeMois);
+        $puissance = pow(1 + $tauxEffectifMensuel, $dureeMois);
+        $annuite = $montant * $tauxEffectifMensuel * $puissance / ($puissance - 1);
+        $interets = $annuite * $dureeMois - $montant;
+        error_log("Intérêts calculés (annuité constante): {$interets}");
 
         // Calculer la date de retour estimée
         $dateRetourEstimee = date('Y-m-d', strtotime($data->dateDemande . ' + ' . $data->dureeMois . ' months'));
