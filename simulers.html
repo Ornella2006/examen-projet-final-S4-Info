@@ -18,7 +18,7 @@
     <select id="sim-idTypePret" required>
       <option value="">Sélectionner un type de prêt</option>
     </select>
-    <input type="number" id="sim-montant" placeholder="Montant (€)" step="100" min="1000" required>
+    <input type="number" id="sim-montant" placeholder="Montant (€)" step="0.01" min="1000" required>
     <input type="number" id="sim-dureeMois" placeholder="Durée (mois)" min="1" required>
     <input type="number" id="sim-tauxAssurance" placeholder="Taux Assurance (%)" step="0.01" min="0" max="5" value="0">
     <button onclick="simulerPret()">Simuler</button>

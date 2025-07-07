@@ -8,7 +8,6 @@ class EtablissementFinancier {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
     public static function getById($id) {
         $db = getDB();
         $stmt = $db->prepare("SELECT * FROM EtablissementFinancier_EF WHERE idEtablissementFinancier = ?");

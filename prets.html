@@ -28,7 +28,7 @@
     <select id="idEtablissementFinancier" required>
       <option value="">Sélectionner un établissement</option>
     </select>
-    <input type="number" id="montant" placeholder="Montant (€)" step="0" min="0" required>
+    <input type="number" id="montant" placeholder="Montant (€)" step="0.01" min="1000" required>
     <input type="number" id="dureeMois" placeholder="Durée (mois)" min="1" required>
     <input type="date" id="dateDemande" required>
     <input type="number" id="tauxAssurance" placeholder="Taux Assurance (%)" step="0.01" min="0" max="5" value="0">
@@ -110,7 +110,7 @@
     function chargerEtablissements() {
       ajax("GET", "/etablissements", null, (data) => {
         const select = document.getElementById("idEtablissementFinancier");
-        select.innerHTML = '<Hosted on GitHub? <option value="">Sélectionner un établissement</option>';
+        select.innerHTML = '<option value="">Sélectionner un établissement</option>';
         data.forEach(e => {
           const option = document.createElement("option");
           option.value = e.idEtablissementFinancier;

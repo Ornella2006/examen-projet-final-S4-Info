@@ -2,15 +2,11 @@
 require_once __DIR__ . '/../models/EtablissementFinancier.php';
 require_once __DIR__ . '/../helpers/Utils.php';
 
-
 class EtablissementFinancierController {
     public static function getAll() {
         $etablissements = EtablissementFinancier::getAll();
         Flight::json($etablissements);
     }
-
-
-
 
     public static function getById($id) {
         $etablissement = EtablissementFinancier::getById($id);
@@ -33,7 +29,6 @@ class EtablissementFinancierController {
 
     public static function update($id) {
         $data = Flight::request()->data;
-        // Log des données reçues
         error_log("Données reçues pour PUT /etablissements/$id: " . print_r($data, true));
         
         if (empty($data->nomEtablissementFinancier) || !isset($data->fondTotal) || !is_numeric($data->fondTotal) || $data->fondTotal < 0) {

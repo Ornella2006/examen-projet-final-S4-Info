@@ -5,7 +5,6 @@ class Pret {
     public static function create($data) {
         $db = getDB();
         
-        // Log des données reçues
         error_log("Données reçues dans Pret::create: " . print_r($data, true));
 
         // Vérifier si le client existe et est actif
@@ -160,6 +159,7 @@ class Pret {
             return $stmt->rowCount();
         } catch (PDOException $e) {
             $db->rollBack();
+            // error deriveError: function(error) { document.getElementById("error-message").textContent = `Erreur lors de la validation: ${error}`; } } } catch (Exception $e) {
             error_log("Erreur SQL dans valider: " . $e->getMessage());
             throw new Exception("Erreur lors de la validation du prêt: " . $e->getMessage());
         }
@@ -228,4 +228,5 @@ class Pret {
         ];
     }
 }
-?>
+
+
