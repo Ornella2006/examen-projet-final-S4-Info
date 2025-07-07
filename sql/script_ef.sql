@@ -55,7 +55,8 @@ CREATE TABLE Remboursement_EF (
     idPret INT,
     montant DECIMAL(15,2) NOT NULL,
     date_remboursement DATE NOT NULL,
-    FOREIGN KEY (idPret) REFERENCES Pret_EF(idPret)
+    interet VARCHAR(128)
+,    FOREIGN KEY (idPret) REFERENCES Pret_EF(idPret)
 );
 
 INSERT INTO EtablissementFinancier_EF (nomEtablissementFinancier, fondTotal)
