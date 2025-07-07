@@ -57,3 +57,21 @@ CREATE TABLE Pret_EF (
 --     date_remboursement DATE NOT NULL,
 --     FOREIGN KEY (idPret) REFERENCES Pret(idPret)
 -- );
+
+INSERT INTO EtablissementFinancier_EF (nomEtablissementFinancier, fondTotal, dateCreation) VALUES
+('Banque Nationale', 1000000.00, '2025-01-01 10:00:00'),
+('Crédit Agricole', 500000.50, '2025-02-15 14:30:00'),
+('Société Générale', 750000.75, '2025-03-10 09:15:00');
+
+INSERT INTO TypePret_EF (libelle, tauxInteret, dureeMaxMois, dateCreation) VALUES
+('Prêt immobilier', 3.5, 240, '2025-01-01 12:00:00'),
+('Prêt personnel', 5.0, 60, '2025-02-01 12:00:00'),
+('Prêt auto', 4.0, 84, '2025-03-01 12:00:00');
+
+INSERT INTO Client_EF (nom, prenom, adresse, telephone, email, dateCreation) VALUES
+('Dupont', 'Jean', '12 Rue de Paris, 75001', '0123456789', 'jean.dupont@example.com', '2025-01-15 08:00:00'),
+('Martin', 'Sophie', '45 Avenue des Champs, 75008', '0987654321', 'sophie.martin@example.com', '2025-02-20 09:00:00');
+
+INSERT INTO Pret_EF (idClient, idTypePret, montant, dureeMois, dateDemande, dateAccord, statut) VALUES
+(1, 1, 200000.00, 180, '2025-03-01', '2025-03-05', 'accorde'),
+(2, 2, 10000.00, 36, '2025-04-01', NULL, 'en_attente');
