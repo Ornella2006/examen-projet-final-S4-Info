@@ -107,3 +107,28 @@ REGLES DE GESTION :
 - Montant > 0 et ≤ solde disponible
 - Calcul intérêt = montant × (taux / 100)
 - Date retour estimée = Date + durée (du type de prêt)
+
+
+simultaion remboursement
+1000 <= inserer dans la base par mois
+inserer par mois les tableaux de remboursement
+mensualité constante
+specifier dans sujet
+stocker {
+    interet 
+    si une personne a un pret de aout 2025 => Aout 2026 => interet
+    interet => somme par mois 
+}
+
+tab de remboursement => supposer tjrs payer => a inserer
+et apres si on veut voir combein est son interface_exists
+etape 4 => simulation, doit tester le calcul sans pour autant que c'est deja ca
+et apres on pourrait savoir si ca marche si je change avec autre chose => etablissement financier
+
+systeme de simulation
+
+
+IP1 : 172.60.0.13
+IP2 : 172.60.0.17
+IP3 : 172.60.0.18
+IP4 : 172.60.255.250
