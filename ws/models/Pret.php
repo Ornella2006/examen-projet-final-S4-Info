@@ -172,4 +172,56 @@ class Pret {
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function simuler($data) {
+        $db = getDB();
+        
+        error_log("Simulation du prêt: " . print_r($data, true));
+
+        // Vérifier si le type de prêt existe
+        $stmt = $db->prepare("SELECT tauxInteret, dureeMaxMois FROM TypePret_EF WHERE idTypePret = ?");
+        $stmt->execute([$data->idTypePret]);
+        $typePret = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$typePret) {
+            error_log("Erreur: Type de prêt invalide pour idTypePret={$data->idTypePret}");
+            throw new Exception("Type de prêt invalide.");
+        }
+
+        // Vérifier la durée
+        if ($data->dureeMois > $typePret['dureeMaxMois']) {
+            error_log("Erreur: Durée excessive");
+            throw new Exception("La durée dépasse la durée maximale autorisée.");
+        }
+
+        // Vérifier le taux d'assurance
+        $tauxAssurance = isset($data->tauxAssurance) ? floatval($data->tauxAssurance) : 0.00;
+        if ($tauxAssurance < 0 || $tauxAssurance > 5) {
+            error_log("Erreur: Taux d'assurance invalide");
+            throw new Exception("Le taux d'assurance doit être compris entre 0 et 5%.");
+        }
+
+        // Calculer le taux effectif mensuel
+        $tauxEffectifMensuel = ($typePret['tauxInteret'] + $tauxAssurance) / 100 / 12;
+        $montant = floatval($data->montant);
+        $dureeMois = intval($data->dureeMois);
+
+        // Calculer l'annuité sans arrondi intermédiaire
+        $puissance = pow(1 + $tauxEffectifMensuel, $dureeMois);
+        $annuite = $montant * $tauxEffectifMensuel * $puissance / ($puissance - 1);
+        $coutTotal = $annuite * $dureeMois;
+        $interetsTotaux = $coutTotal - $montant;
+
+        error_log("Résultat de la simulation: annuité=" . round($annuite, 2) . ", intérêts totaux=" . round($interetsTotaux, 2) . ", coût total=" . round($coutTotal, 2));
+
+        return [
+            'annuite' => round($annuite, 2),
+            'interetsTotaux' => round($interetsTotaux, 2),
+            'coutTotal' => round($coutTotal, 2),
+            'montant' => $montant,
+            'dureeMois' => $dureeMois,
+            'tauxInteret' => $typePret['tauxInteret'],
+            'tauxAssurance' => $tauxAssurance
+        ];
+    }
 }
+?>

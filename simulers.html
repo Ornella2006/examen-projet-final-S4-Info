@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulation de prêts</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, button, select { margin: 5px; padding: 5px; }
+    .error { color: red; }
+    #simulation-result { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Simulation de prêts</h1>
+
+  <div>
+    <h2>Simulation de prêt</h2>
+    <select id="sim-idTypePret" required>
+      <option value="">Sélectionner un type de prêt</option>
+    </select>
+    <input type="number" id="sim-montant" placeholder="Montant (€)" step="100" min="1000" required>
+    <input type="number" id="sim-dureeMois" placeholder="Durée (mois)" min="1" required>
+    <input type="number" id="sim-tauxAssurance" placeholder="Taux Assurance (%)" step="0.01" min="0" max="5" value="0">
+    <button onclick="simulerPret()">Simuler</button>
+    <p id="error-message" class="error"></p>
+    <div id="simulation-result"></div>
+  </div>
+
+  <script>
+    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
+
+    function ajax(method, url, data, callback, errorCallback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, apiBase + url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            callback(JSON.parse(xhr.responseText));
+          } else {
+            errorCallback(xhr.status, xhr.responseText);
+          }
+        }
+      };
+      console.log(`Envoi ${method} ${url} avec données : ${data}`);
+      xhr.send(data);
+    }
+
+    function chargerTypesPrets() {
+      ajax("GET", "/types-prets", null, (data) => {
+        const simSelect = document.getElementById("sim-idTypePret");
+        simSelect.innerHTML = '<option value="">Sélectionner un type de prêt</option>';
+        data.forEach(t => {
+          const option = document.createElement("option");
+          option.value = t.idTypePret;
+          option.textContent = `${t.libelle} (Taux: ${t.tauxInteret}%, Durée max: ${t.dureeMaxMois} mois)`;
+          simSelect.appendChild(option);
+        });
+      }, (status, error) => {
+        document.getElementById("error-message").textContent = `Erreur de chargement des types de prêts: ${error}`;
+      });
+    }
+
+    function simulerPret() {
+      const idTypePret = document.getElementById("sim-idTypePret").value;
+      const montant = document.getElementById("sim-montant").value;
+      const dureeMois = document.getElementById("sim-dureeMois").value;
+      const tauxAssurance = document.getElementById("sim-tauxAssurance").value;
+
+      if (!idTypePret) {
+        document.getElementById("error-message").textContent = "Sélectionnez un type de prêt pour la simulation.";
+        return;
+      }
+      const parsedMontant = parseFloat(montant);
+      if (montant === "" || isNaN(parsedMontant) || parsedMontant < 1000) {
+        document.getElementById("error-message").textContent = "Le montant doit être supérieur ou égal à 1000 €.";
+        return;
+      }
+      const parsedDureeMois = parseInt(dureeMois);
+      if (dureeMois === "" || isNaN(parsedDureeMois) || parsedDureeMois <= 0) {
+        document.getElementById("error-message").textContent = "La durée doit être un entier positif.";
+        return;
+      }
+      const parsedTauxAssurance = parseFloat(tauxAssurance) || 0;
+      if (tauxAssurance !== "" && (parsedTauxAssurance < 0 || parsedTauxAssurance > 5)) {
+        document.getElementById("error-message").textContent = "Le taux d'assurance doit être compris entre 0 et 5%.";
+        return;
+      }
+
+      const data = `idTypePret=${idTypePret}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&tauxAssurance=${parsedTauxAssurance}`;
+      console.log("Valeurs simulation:", { idTypePret, montant: parsedMontant, dureeMois: parsedDureeMois, tauxAssurance: parsedTauxAssurance });
+
+      ajax("POST", "/prets/simuler", data, (response) => {
+        document.getElementById("simulation-result").innerHTML = `
+          <h3>Résultat de la simulation</h3>
+          <p>Montant: ${response.montant} €</p>
+          <p>Durée: ${response.dureeMois} mois</p>
+          <p>Taux d'intérêt: ${response.tauxInteret}%</p>
+          <p>Taux d'assurance: ${response.tauxAssurance}%</p>
+          <p>Annuité mensuelle: ${response.annuite} €</p>
+          <p>Intérêts totaux: ${response.interetsTotaux} €</p>
+          <p>Coût total du prêt: ${response.coutTotal} €</p>
+        `;
+        document.getElementById("error-message").textContent = "";
+      }, (status, error) => {
+        document.getElementById("error-message").textContent = `Erreur lors de la simulation: ${error}`;
+      });
+    }
+
+    function resetForm() {
+      document.getElementById("sim-idTypePret").value = "";
+      document.getElementById("sim-montant").value = "";
+      document.getElementById("sim-dureeMois").value = "";
+      document.getElementById("sim-tauxAssurance").value = "0";
+      document.getElementById("error-message").textContent = "";
+      document.getElementById("simulation-result").innerHTML = "";
+    }
+
+    // Charger les données au démarrage
+    chargerTypesPrets();
+  </script>
+</body>
+</html>

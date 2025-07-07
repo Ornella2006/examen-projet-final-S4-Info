@@ -6,6 +6,8 @@ require 'routes/etablissement_routes.php';
 require 'routes/type_pret_routes.php';
 require 'routes/pret_routes.php';
 require 'routes/client_routes.php';
+require 'routes/simulation_routes.php';
+
 
 
 Flight::route('GET /test', function() {

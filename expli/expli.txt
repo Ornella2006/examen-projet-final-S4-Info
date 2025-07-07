@@ -132,3 +132,5 @@ IP1 : 172.60.0.13
 IP2 : 172.60.0.17
 IP3 : 172.60.0.18
 IP4 : 172.60.255.250
+
+application/x-www-form-urlencoded
