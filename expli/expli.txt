@@ -134,3 +134,117 @@ IP3 : 172.60.0.18
 IP4 : 172.60.255.250
 
 application/x-www-form-urlencoded
+
+
+
+
+
+Voici les nouvelles fonctionnalites a implementer si ce n'est pas deja fais :
+Voici la structure de la base :
+.
+├── etablissements.html
+├── expli
+│   ├── base.sql
+│   ├── contenu_code_projet.txt
+│   ├── expli.txt
+│   ├── simulation.txt
+│   └── Simulation.xlsx
+├── index.html
+├── prets.html
+├── simulers.html
+├── sql
+│   ├── data_test.sql
+│   ├── script_ef.sql
+│   └── script.sql
+├── types-prets.html
+└── ws
+    ├── composer.json
+    ├── composer.lock
+    ├── controllers
+    │   ├── ClientController.php
+    │   ├── EtablissementFinancierController.php
+    │   ├── EtudiantController.php
+    │   ├── PretController.php
+    │   └── TypePretController.php
+    ├── db.php
+    ├── helpers
+    │   └── Utils.php
+    ├── index.php
+    ├── models
+    │   ├── Client.php
+    │   ├── EtablissementFinancier.php
+    │   ├── Etudiant.php
+    │   ├── Pret.php
+    │   └── TypePret.php
+    ├── routes
+    │   ├── client_routes.php
+    │   ├── etablissement_routes.php
+    │   ├── etudiant_routes.php
+    │   ├── pret_routes.php
+    │   ├── simulation_routes.php
+    │   ├── test_routes.php
+    │   └── type_pret_routes.php
+    └── vendor
+        ├── autoload.php
+        ├── composer
+        │   ├── autoload_classmap.php
+        │   ├── autoload_files.php
+        │   ├── autoload_namespaces.php
+        │   ├── autoload_psr4.php
+        │   ├── autoload_real.php
+        │   ├── autoload_static.php
+        │   ├── ClassLoader.php
+        │   ├── installed.json
+        │   ├── installed.php
+        │   ├── InstalledVersions.php
+        │   ├── LICENSE
+        │   └── platform_check.php
+        └── mikecao
+            └── flight
+                ├── composer.json
+                ├── flight
+                │   ├── autoload.php
+                │   ├── core
+                │   │   ├── Dispatcher.php
+                │   │   └── Loader.php
+                │   ├── Engine.php
+                │   ├── Flight.php
+                │   ├── net
+                │   │   ├── Request.php
+                │   │   ├── Response.php
+                │   │   ├── Route.php
+                │   │   └── Router.php
+                │   ├── template
+                │   │   └── View.php
+                │   └── util
+                │       ├── Collection.php
+                │       └── LegacyJsonSerializable.php
+                ├── index.php
+                ├── LICENSE
+                ├── README.md
+                ├── tests
+                │   ├── AutoloadTest.php
+                │   ├── classes
+                │   │   ├── Factory.php
+                │   │   ├── Hello.php
+                │   │   └── User.php
+                │   ├── DispatcherTest.php
+                │   ├── FilterTest.php
+                │   ├── FlightTest.php
+                │   ├── LoaderTest.php
+                │   ├── MapTest.php
+                │   ├── README.md
+                │   ├── RedirectTest.php
+                │   ├── RegisterTest.php
+                │   ├── RenderTest.php
+                │   ├── RequestTest.php
+                │   ├── RouterTest.php
+                │   ├── VariableTest.php
+                │   ├── views
+                │   │   ├── hello.php
+                │   │   ├── layouts
+                │   │   │   └── layout.php
+                │   │   └── world.html
+                │   └── ViewTest.php
+                └── VERSION
+

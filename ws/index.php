@@ -7,6 +7,8 @@ require 'routes/type_pret_routes.php';
 require 'routes/pret_routes.php';
 require 'routes/client_routes.php';
 require 'routes/simulation_routes.php';
+require 'routes/remboursement_routes.php';
+
 
 
 

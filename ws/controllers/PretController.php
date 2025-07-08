@@ -46,6 +46,12 @@ class PretController {
             Flight::json(['error' => 'Le taux d\'assurance doit être compris entre 0 et 5%'], 400);
             return;
         }
+        $delaiPremierRemboursementMois = isset($data->delaiPremierRemboursementMois) ? intval($data->delaiPremierRemboursementMois) : 0;
+        if ($delaiPremierRemboursementMois < 0 || $delaiPremierRemboursementMois > 12) {
+            error_log("Erreur: delaiPremierRemboursementMois invalide");
+            Flight::json(['error' => 'Le délai de premier remboursement doit être compris entre 0 et 12 mois'], 400);
+            return;
+        }
 
         try {
             $id = Pret::create($data);
@@ -102,6 +108,12 @@ class PretController {
         if ($tauxAssurance < 0 || $tauxAssurance > 5) {
             error_log("Erreur: tauxAssurance invalide");
             Flight::json(['error' => 'Le taux d\'assurance doit être compris entre 0 et 5%'], 400);
+            return;
+        }
+        $delaiPremierRemboursementMois = isset($data->delaiPremierRemboursementMois) ? intval($data->delaiPremierRemboursementMois) : 0;
+        if ($delaiPremierRemboursementMois < 0 || $delaiPremierRemboursementMois > 12) {
+            error_log("Erreur: delaiPremierRemboursementMois invalide");
+            Flight::json(['error' => 'Le délai de premier remboursement doit être compris entre 0 et 12 mois'], 400);
             return;
         }
 
