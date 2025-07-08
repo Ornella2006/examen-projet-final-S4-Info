@@ -2,11 +2,6 @@
     <div class="page-title">
         <h1>Intérêts Gagnés par Mois</h1>
     </div>
-    <!-- <div class="user-profile">
-        <img src="template/logo.png" alt="Admin">
-        <span>Admin</span>
-        <i class="fas fa-chevron-down"></i>
-    </div> -->
 </div>
 
 <div class="content">
@@ -38,23 +33,36 @@
     function fetchInterets() {
         const debut = document.getElementById('debut').value;
         const fin = document.getElementById('fin').value;
-        fetch(`${apiBase}/interets_ef?debut=${debut}&fin=${fin}`)
-            .then(r => r.json())
+        if (!debut || !fin) {
+            alert("Veuillez sélectionner les deux dates.");
+            return;
+        }
+        console.log(`Requête API: ${apiBase}/interets-ef?debut=${debut}&fin=${fin}`);
+        fetch(`${apiBase}/interets-ef?debut=${debut}&fin=${fin}`)
+            .then(r => {
+                if (!r.ok) throw new Error(`Erreur HTTP ${r.status}`);
+                return r.json();
+            })
             .then(data => {
+                console.log("Données reçues:", data);
                 const tbody = document.getElementById('interets-tbody');
                 tbody.innerHTML = '';
                 const labels = [];
                 const values = [];
-                data.forEach(row => {
-                    labels.push(row.periode);
-                    values.push(parseFloat(row.total_interets));
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row.periode}</td>
-                        <td>${row.total_interets} €</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2">Aucune donnée disponible pour cette période.</td></tr>';
+                } else {
+                    data.forEach(row => {
+                        labels.push(row.periode);
+                        values.push(parseFloat(row.total_interets));
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.periode}</td>
+                            <td>${parseFloat(row.total_interets).toFixed(2)} €</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
 
                 const ctx = document.getElementById('chart').getContext('2d');
                 if (window.myChart) window.myChart.destroy();
@@ -94,7 +102,7 @@
             })
             .catch(error => {
                 console.error("Erreur lors du chargement des données:", error);
-                alert("Erreur lors du chargement des données.");
+                alert("Erreur lors du chargement des données: " + error.message);
             });
     }
 </script>
