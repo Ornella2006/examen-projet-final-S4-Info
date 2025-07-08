@@ -1,0 +1,74 @@
+    body { font-family: sans-serif; padding: 20px; }
+    input, select, button { margin: 5px; padding: 8px; width: 200px; }
+    button { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+    #message { color: red; margin-top: 10px; }
+    .form-container { max-width: 600px; margin: auto; }
+.form-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+
+.form-container h1 {
+    font-size: 26px;
+    color: var(--primary-color);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.form-container h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 50%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+    border-radius: 3px;
+}
+
+.form-container select,
+.form-container input {
+    width: 200px;
+    padding: 8px;
+    margin: 5px 10px 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color var(--transition-speed);
+}
+
+.form-container select:focus,
+.form-container input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.form-container button {
+    padding: 8px 15px;
+    margin: 5px 10px 5px 0;
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color var(--transition-speed);
+}
+
+.form-container button:hover {
+    background-color: #27ae60;
+}
+
+.form-container #message {
+    color: var(--danger-color);
+    margin-top: 10px;
+    font-size: 14px;
+}
