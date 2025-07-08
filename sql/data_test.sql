@@ -20,10 +20,10 @@ VALUES
     ('Sanctionné', 'Paul', 'paul.sanctionne@example.com', 0);
 
 -- Insérer des prêts
-INSERT INTO Pret_EF (idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, delaiPremierRemboursementMois, dateDemande, dateAccord, interets, dateRetourEstimee, statut) 
+INSERT INTO Pret_EF (idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, delaiPremierRemboursementMois, dateDemande, dateAccord, interets, tauxAssurance, dateRetourEstimee, statut) 
 VALUES
-    (1, 1, 1, 10000.00, 12, 1, '2025-01-01', '2025-01-02', 550.00, '2026-01-01', 'accorde'), -- Intérêts = 10000 * 5.5% = 550
-    (2, 2, 1, 200000.00, 240, 1, '2025-02-01', '2025-02-02', 6400.00, '2045-02-01', 'accorde'); -- Intérêts = 200000 * 3.2% * 20 ans = 6400
+    (1, 1, 1, 10000.00, 12, 1, '2025-01-01', '2025-01-02', 550.00, 0.6, '2026-01-01', 'accorde'), -- Intérêts = 10000 * 5.5% = 550
+    (2, 2, 1, 200000.00, 240, 1, '2025-02-01', '2025-02-02', 6400.00, 0.8, '2045-02-01', 'accorde'); -- Intérêts = 200000 * 3.2% * 20 ans = 6400
 
 -- Insérer des remboursements
 INSERT INTO Remboursement_EF (idPret, montantRembourse, dateRemboursement) 
@@ -59,11 +59,11 @@ VALUES
     ('Sanctionné', 'Paul', 'paul.sanctionne@example.com', 0);
 
 -- Insérer des prêts
-INSERT INTO Pret_EF (idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, delaiPremierRemboursementMois, dateDemande, dateAccord, interets, dateRetourEstimee, statut) 
+INSERT INTO Pret_EF (idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, delaiPremierRemboursementMois, dateDemande, dateAccord, interets, tauxAssurance, dateRetourEstimee, statut) 
 VALUES
-    (1, 1, 1, 10000.00, 12, 1, '2025-01-01', '2025-01-02', 550.00, '2026-01-01', 'accorde'), -- Banque Nationale
-    (2, 2, 2, 200000.00, 240, 1, '2025-02-01', '2025-02-02', 6400.00, '2045-02-01', 'accorde'), -- Caisse d'Épargne
-    (1, 3, 3, 15000.00, 24, 1, '2025-03-01', '2025-03-02', 600.00, '2027-03-01', 'accorde'); -- Crédit Agricole
+    (1, 1, 1, 10000.00, 12, 1, '2025-01-01', '2025-01-02', 550.00, 0.3, '2026-01-01', 'accorde'), -- Banque Nationale
+    (2, 2, 2, 200000.00, 240, 1, '2025-02-01', '2025-02-02', 6400.00, 0.4, '2045-02-01', 'accorde'), -- Caisse d'Épargne
+    (1, 3, 3, 15000.00, 24, 1, '2025-03-01', '2025-03-02', 600.00, 0.9, '2027-03-01', 'accorde'); -- Crédit Agricole
 
 -- Insérer des remboursements
 INSERT INTO Remboursement_EF (idPret, montantRembourse, dateRemboursement) 
