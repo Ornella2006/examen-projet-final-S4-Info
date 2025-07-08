@@ -77,7 +77,7 @@ class PretController {
         Flight::json($prets);
     }
 
-      public static function simuler() {
+    public static function simuler() {
         $rawInput = file_get_contents('php://input');
         error_log("Données brutes POST /prets/simuler: " . $rawInput);
         parse_str($rawInput, $parsedData);
@@ -97,6 +97,21 @@ class PretController {
         if (empty($data->dureeMois) || !is_numeric($data->dureeMois) || $data->dureeMois <= 0) {
             error_log("Erreur: dureeMois invalide");
             Flight::json(['error' => 'Durée doit être un entier positif'], 400);
+            return;
+        }
+        if (empty($data->idClient) || !is_numeric($data->idClient)) {
+            error_log("Erreur: idClient manquant ou invalide");
+            Flight::json(['error' => 'Identifiant du client requis'], 400);
+            return;
+        }
+        if (empty($data->idEtablissementFinancier) || !is_numeric($data->idEtablissementFinancier)) {
+            error_log("Erreur: idEtablissementFinancier manquant ou invalide");
+            Flight::json(['error' => 'Établissement financier requis'], 400);
+            return;
+        }
+        if (empty($data->dateDemande)) {
+            error_log("Erreur: dateDemande manquante");
+            Flight::json(['error' => 'Date de demande requise'], 400);
             return;
         }
         $tauxAssurance = isset($data->tauxAssurance) ? floatval($data->tauxAssurance) : 0.00;
@@ -120,7 +135,4 @@ class PretController {
         }
     }
 }
-
-
-  
-    ?>
+?>

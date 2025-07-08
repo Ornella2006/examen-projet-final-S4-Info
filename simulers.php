@@ -1,6 +1,126 @@
 <?php
 // Pas de <!DOCTYPE html>, <html>, <head>, <body>, ou </html> car inclus dans template.php
 ?>
+<style>
+    /* Styles généraux */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f9ff;
+        color: #333;
+    }
+
+ 
+
+    .page-title h1 {
+        margin: 0;
+        font-size: 24px;
+    }
+
+    .content {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    h2 {
+        color: #003366; /* Bleu marine */
+        border-bottom: 2px solid #66b3ff; /* Bleu clair */
+        padding-bottom: 10px;
+    }
+
+    /* Styles des formulaires */
+    fieldset {
+        border: 1px solid #66b3ff; /* Bleu clair */
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: white;
+    }
+
+    legend {
+        color: #003366; /* Bleu marine */
+        font-weight: bold;
+        padding: 0 10px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        color: #003366; /* Bleu marine */
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #66b3ff; /* Bleu clair */
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #003366; /* Bleu marine */
+        box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+    }
+
+    /* Bouton */
+    button {
+        background-color: #003366; /* Bleu marine */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #004080; /* Bleu marine légèrement plus clair */
+    }
+
+    /* Résultats */
+    #simulation-result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: white;
+        border: 1px solid #66b3ff; /* Bleu clair */
+        border-radius: 5px;
+    }
+
+    #simulation-result h3 {
+        color: #003366; /* Bleu marine */
+        margin-top: 0;
+    }
+
+    /* Message d'erreur */
+    .error {
+        color: #d9534f;
+        margin: 10px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .content {
+            padding: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
 <div class="header">
     <div class="page-title">
         <h1>Simulation de prêts</h1>
@@ -12,6 +132,18 @@
         <h2>Simulation de prêt</h2>
         <fieldset>
             <legend>Paramètres du prêt</legend>
+            <div class="input-group">
+                <label for="sim-idClient">Client :</label>
+                <select id="sim-idClient" required>
+                    <option value="">Sélectionner un client</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="sim-idEtablissementFinancier">Établissement financier :</label>
+                <select id="sim-idEtablissementFinancier" required>
+                    <option value="">Sélectionner un établissement</option>
+                </select>
+            </div>
             <div class="input-group">
                 <label for="sim-idTypePret">Type de prêt :</label>
                 <select id="sim-idTypePret" required>
@@ -28,7 +160,7 @@
             </div>
             <div class="input-group">
                 <label for="sim-delaiPremierRemboursementMois">Délai avant 1er remboursement (mois) :</label>
-                <input type="number" id="sim-delaiPremierRemboursementMois" placeholder="Ex: 3 mois" min="0" max="24" value="0" title="Nombre de mois avant le premier remboursement">
+                <input type="number" id="sim-delaiPremierRemboursementMois" placeholder="Ex: 3 mois" min="0" max="12" value="0" title="Nombre de mois avant le premier remboursement">
             </div>
             <div class="input-group">
                 <label for="sim-dateDemande">Date de demande :</label>
@@ -65,6 +197,36 @@
         xhr.send(data);
     }
 
+    function chargerClients() {
+        ajax("GET", "/clients", null, (data) => {
+            const clientSelect = document.getElementById("sim-idClient");
+            clientSelect.innerHTML = '<option value="">Sélectionner un client</option>';
+            data.forEach(c => {
+                const option = document.createElement("option");
+                option.value = c.idClient;
+                option.textContent = `${c.nom} ${c.prenom} (${c.email})`;
+                clientSelect.appendChild(option);
+            });
+        }, (status, error) => {
+            document.getElementById("error-message").textContent = `Erreur de chargement des clients: ${error}`;
+        });
+    }
+
+    function chargerEtablissements() {
+        ajax("GET", "/etablissements", null, (data) => {
+            const etabSelect = document.getElementById("sim-idEtablissementFinancier");
+            etabSelect.innerHTML = '<option value="">Sélectionner un établissement</option>';
+            data.forEach(e => {
+                const option = document.createElement("option");
+                option.value = e.idEtablissementFinancier;
+                option.textContent = `${e.nomEtablissementFinancier} (Fonds: ${e.fondTotal} €)`;
+                etabSelect.appendChild(option);
+            });
+        }, (status, error) => {
+            document.getElementById("error-message").textContent = `Erreur de chargement des établissements: ${error}`;
+        });
+    }
+
     function chargerTypesPrets() {
         ajax("GET", "/types-prets", null, (data) => {
             const simSelect = document.getElementById("sim-idTypePret");
@@ -82,6 +244,8 @@
 
     function simulerPret() {
         try {
+            const idClient = document.getElementById("sim-idClient").value;
+            const idEtablissementFinancier = document.getElementById("sim-idEtablissementFinancier").value;
             const idTypePret = document.getElementById("sim-idTypePret").value;
             const montant = document.getElementById("sim-montant").value;
             const dureeMois = document.getElementById("sim-dureeMois").value;
@@ -89,6 +253,14 @@
             const dateDemande = document.getElementById("sim-dateDemande").value;
             const tauxAssurance = document.getElementById("sim-tauxAssurance").value;
 
+            if (!idClient) {
+                document.getElementById("error-message").textContent = "Sélectionnez un client pour la simulation.";
+                return;
+            }
+            if (!idEtablissementFinancier) {
+                document.getElementById("error-message").textContent = "Sélectionnez un établissement financier pour la simulation.";
+                return;
+            }
             if (!idTypePret) {
                 document.getElementById("error-message").textContent = "Sélectionnez un type de prêt pour la simulation.";
                 return;
@@ -104,8 +276,8 @@
                 return;
             }
             const parsedDelai = parseInt(delaiPremierRemboursementMois) || 0;
-            if (parsedDelai < 0 || parsedDelai > 24) {
-                document.getElementById("error-message").textContent = "Le délai de premier remboursement doit être compris entre 0 et 24 mois.";
+            if (parsedDelai < 0 || parsedDelai > 12) {
+                document.getElementById("error-message").textContent = "Le délai de premier remboursement doit être compris entre 0 et 12 mois.";
                 return;
             }
             if (!dateDemande) {
@@ -118,12 +290,12 @@
                 return;
             }
 
-            const data = `idTypePret=${idTypePret}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&delaiPremierRemboursementMois=${parsedDelai}&dateDemande=${dateDemande}&tauxAssurance=${parsedTauxAssurance}`;
-            console.log("Valeurs simulation:", { idTypePret, montant: parsedMontant, dureeMois: parsedDureeMois, delaiPremierRemboursementMois: parsedDelai, dateDemande, tauxAssurance: parsedTauxAssurance });
+            const data = `idClient=${idClient}&idEtablissementFinancier=${idEtablissementFinancier}&idTypePret=${idTypePret}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&delaiPremierRemboursementMois=${parsedDelai}&dateDemande=${dateDemande}&tauxAssurance=${parsedTauxAssurance}`;
+            console.log("Valeurs simulation:", { idClient, idEtablissementFinancier, idTypePret, montant: parsedMontant, dureeMois: parsedDureeMois, delaiPremierRemboursementMois: parsedDelai, dateDemande, tauxAssurance: parsedTauxAssurance });
 
             ajax("POST", "/prets/simuler", data, (response) => {
                 document.getElementById("simulation-result").innerHTML = `
-                    <h3>Résultat de la simulation</h3>
+                    <h3>Résultat de la simulation (ID: ${response.idSimulation})</h3>
                     <p>Montant: ${response.montant} €</p>
                     <p>Durée: ${response.dureeMois} mois</p>
                     <p>Taux d'intérêt: ${response.tauxInteret}%</p>
@@ -144,6 +316,8 @@
     }
 
     // Charger les données au démarrage
+    chargerClients();
+    chargerEtablissements();
     chargerTypesPrets();
     document.getElementById("sim-dateDemande").value = new Date().toISOString().split('T')[0];
 </script>
