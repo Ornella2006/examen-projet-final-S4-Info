@@ -46,7 +46,8 @@
 </div>
 
 <script>
-    const apiBase = "/examen-projet-final/ws";
+
+    const apiBase = "/examen-projet-final-S4-Info/ws";
 
     function ajax(method, url, data, callback, errorCallback) {
         const xhr = new XMLHttpRequest();
