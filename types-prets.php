@@ -33,7 +33,7 @@
 
 
   <script>
-    const apiBase = "/examen-projet-final-S4-Info/ws";
+    const apiBase = "/ETU003273/ws";
 
     function ajax(method, url, data, callback, errorCallback) {
       const xhr = new XMLHttpRequest();
