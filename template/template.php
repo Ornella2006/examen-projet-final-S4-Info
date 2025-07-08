@@ -2,7 +2,7 @@
 $page = isset($_GET['page']) ? basename($_GET['page']) : 'dashboard';
 
 // Définir le chemin de la page
-if ($page === 'interets_ef' || $page === 'ajouter_fonds') {
+if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets') {
     $pagePath = __DIR__ . '/../' . $page . '.php'; // Cherche dans la racine
 } else {
     $pagePath = __DIR__ . '/' . $page . '.php'; // Cherche dans template/
@@ -25,6 +25,12 @@ if (!file_exists($pagePath)) {
      <?php if ($page === 'ajouter_fonds'): ?>
            <link rel="stylesheet" href="../css/ajout_fonds.css">
        <?php endif; ?>
+        <?php if ($page === 'types-prets'): ?>
+           <link rel="stylesheet" href="../css/types-prets.css">
+       <?php endif; ?>
+       <?php if ($page === 'prets'): ?>
+           <link rel="stylesheet" href="../css/prets.css">
+       <?php endif; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -45,11 +51,12 @@ if (!file_exists($pagePath)) {
             <div class="menu-item<?php echo $page === 'dashboard' ? ' active' : ''; ?>">
                 <a href="template.php?page=ajouter_fonds"><i class="fas fa-money-bill-wave"></i><span>Ajout de fond dans l'établissement financier (EF)</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'transactions' ? ' active' : ''; ?>">
-                <a href="template.php?page=transactions"><i class="fas fa-exchange-alt"></i><span>Transactions</span></a>
+            <div class="menu-item<?php echo $page === 'types-prets' ? ' active' : ''; ?>">
+                <a href="template.php?page=types-prets"><i class="fas fa-percentage"></i><span>Création type de prêt avec différent taux</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'clients' ? ' active' : ''; ?>">
-                <a href="template.php?page=clients"><i class="fas fa-users"></i><span>Gestion Clients</span></a>
+            <div class="menu-item<?php echo $page === 'prets' ? ' active' : ''; ?>">
+                <a href="template.php?page=prets"><i class="fas fa-hand-holding-usd"></i><span>Gestion de prêt pour les clients</span></a>
+            </div>
             </div>
             <div class="menu-item<?php echo $page === 'analytiques' ? ' active' : ''; ?>">
                 <a href="template.php?page=analytiques"><i class="fas fa-chart-line"></i><span>Analytiques Financières</span></a>

@@ -1,7 +1,7 @@
 <?php
 function getDB() {
     $host = 'localhost';
-    $dbname = 'EF';
+    $dbname = 'ef';
     $username = 'root';
     $password = '';
 

@@ -1,0 +1,115 @@
+    body { font-family: sans-serif; padding: 20px; }
+    input, button, select { margin: 5px; padding: 5px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .error { color: red; }
+    .success { color: green; }
+.form-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+.form-container h2 {
+    font-size: 20px;
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.form-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 30%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+    border-radius: 2px;
+}
+
+.form-container select,
+.form-container input {
+    width: 200px;
+    padding: 8px;
+    margin: 5px 10px 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: border-color var(--transition-speed);
+}
+
+.form-container select:focus,
+.form-container input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.form-container button {
+    padding: 8px 15px;
+    margin: 5px 10px 10px 0;
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color var(--transition-speed);
+}
+
+.form-container button:hover {
+    background-color: #27ae60;
+}
+
+.form-container #error-message {
+    color: var(--danger-color);
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.form-container #success-message {
+    color: var(--success-color);
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.form-container table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.form-container th,
+.form-container td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.form-container th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.form-container td button {
+    padding: 6px 10px;
+    margin: 0 5px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color var(--transition-speed);
+}
+
+.form-container td button:hover {
+    background-color: var(--hover-color);
+}

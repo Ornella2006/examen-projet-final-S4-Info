@@ -13,5 +13,11 @@ Flight::route('GET /ajouter_fonds.html', function() {
     echo file_get_contents(__DIR__ . '/../ajouter_fonds.html');
 });
 
+Flight::route('GET /test', function() {
+    error_log("Test de journalisation depuis la route /test");
+    echo "Test terminé.";
+});
+
 
 Flight::start();
+error_log("Test de journalisation depuis index.php");

@@ -8,6 +8,12 @@ class ClientController {
         $this->pdo = $pdo;
     }
 
+
+    public static function getAll() {
+        $clients = Client::getAll();
+        Flight::json($clients);
+    }
+    
     public function listerClients() {
         $stmt = $this->pdo->query("SELECT idClient, nom, prenom, adresse, telephone, email FROM Client_EF WHERE actif = 1 ORDER BY idClient");
         $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
