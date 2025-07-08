@@ -22,11 +22,11 @@
     transition: border-color var(--transition-speed);
 }
 
-.form-container input:focus {
+/* .form-container input:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-}
+} */
 
 .form-container button {
     padding: 8px 15px;

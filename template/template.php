@@ -211,6 +211,10 @@ if (!isset($_SESSION['admin_id'])) {
                 <a href="template.php?page=simulers"><i class="fas fa-chart-line"></i><span>Simulation</span></a>
             </div>
 
+            <div class="menu-item<?php echo $page === 'simulers' ? ' active' : ''; ?>">
+                <a href="template.php?page=simulers"><i class="fas fa-chart-line"></i><span>Tableau montant total(EF)</span></a>
+            </div>
+
             <div class="menu-item">
                 <a href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
             </div>
