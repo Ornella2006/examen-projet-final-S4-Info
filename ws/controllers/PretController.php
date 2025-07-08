@@ -76,5 +76,51 @@ class PretController {
         $prets = Pret::getAll();
         Flight::json($prets);
     }
+
+      public static function simuler() {
+        $rawInput = file_get_contents('php://input');
+        error_log("Données brutes POST /prets/simuler: " . $rawInput);
+        parse_str($rawInput, $parsedData);
+        $data = (object) $parsedData;
+        error_log("Données parsées POST /prets/simuler: " . print_r($parsedData, true));
+
+        if (empty($data->idTypePret) || !is_numeric($data->idTypePret)) {
+            error_log("Erreur: idTypePret manquant ou invalide");
+            Flight::json(['error' => 'Type de prêt requis'], 400);
+            return;
+        }
+        if (empty($data->montant) || !is_numeric($data->montant) || $data->montant <= 0) {
+            error_log("Erreur: montant invalide");
+            Flight::json(['error' => 'Montant doit être un nombre positif'], 400);
+            return;
+        }
+        if (empty($data->dureeMois) || !is_numeric($data->dureeMois) || $data->dureeMois <= 0) {
+            error_log("Erreur: dureeMois invalide");
+            Flight::json(['error' => 'Durée doit être un entier positif'], 400);
+            return;
+        }
+        $tauxAssurance = isset($data->tauxAssurance) ? floatval($data->tauxAssurance) : 0.00;
+        if ($tauxAssurance < 0 || $tauxAssurance > 5) {
+            error_log("Erreur: tauxAssurance invalide");
+            Flight::json(['error' => 'Le taux d\'assurance doit être compris entre 0 et 5%'], 400);
+            return;
+        }
+        $delaiPremierRemboursementMois = isset($data->delaiPremierRemboursementMois) ? intval($data->delaiPremierRemboursementMois) : 0;
+        if ($delaiPremierRemboursementMois < 0 || $delaiPremierRemboursementMois > 12) {
+            error_log("Erreur: delaiPremierRemboursementMois invalide");
+            Flight::json(['error' => 'Le délai de premier remboursement doit être compris entre 0 et 12 mois'], 400);
+            return;
+        }
+        try {
+            $result = Pret::simuler($data);
+            Flight::json($result);
+        } catch (Exception $e) {
+            error_log("Erreur lors de la simulation: " . $e->getMessage());
+            Flight::json(['error' => $e->getMessage()], 400);
+        }
+    }
 }
+
+
+  
     ?>
