@@ -10,7 +10,6 @@ Flight::route('GET /prets/@idPret/pdf', function($idPret) {
 });
 
 // Route pour le PDF
-// Route pour le PDF
 Flight::route('GET /prets/@idPret/pdf', function($idPret) {
     require_once __DIR__ . '/../../export_pret_pdf.php';
 });
