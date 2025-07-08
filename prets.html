@@ -5,12 +5,16 @@
   <title>Gestion des prêts clients</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
-    input, button, select { margin: 5px; padding: 5px; }
+    input, button, select { margin: 5px; padding: 8px; width: 200px; }
+    label { display: inline-block; width: 250px; font-weight: bold; }
     table { border-collapse: collapse; width: 100%; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background-color: #f2f2f2; }
     .error { color: red; }
     .success { color: green; }
+    .input-group { margin-bottom: 10px; }
+    fieldset { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; }
+    legend { font-weight: bold; color: #333; }
   </style>
 </head>
 <body>
@@ -18,23 +22,52 @@
   <h1>Gestion des prêts clients</h1>
 
   <div>
-    <h2>Nouveau prêt</h2>
-    <select id="idClient" required>
-      <option value="">Sélectionner un client</option>
-    </select>
-    <select id="idTypePret" required>
-      <option value="">Sélectionner un type de prêt</option>
-    </select>
-    <select id="idEtablissementFinancier" required>
-      <option value="">Sélectionner un établissement</option>
-    </select>
-    <input type="number" id="montant" placeholder="Montant (€)" step="0.01" min="1000" required>
-    <input type="number" id="dureeMois" placeholder="Durée (mois)" min="1" required>
-    <input type="date" id="dateDemande" required>
-    <input type="number" id="tauxAssurance" placeholder="Taux Assurance (%)" step="0.01" min="0" max="5" value="0">
-    <button onclick="creerPret()">Créer le prêt</button>
-    <p id="error-message" class="error"></p>
-    <p id="success-message" class="success"></p>
+    <h2>Créer une demande de prêt</h2>
+    <fieldset>
+      <legend>Paramètres de la demande</legend>
+      <div class="input-group">
+        <label for="idClient">Client :</label>
+        <select id="idClient" required>
+          <option value="">Sélectionner un client</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="idTypePret">Type de prêt :</label>
+        <select id="idTypePret" required>
+          <option value="">Sélectionner un type de prêt</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="idEtablissementFinancier">Établissement financier :</label>
+        <select id="idEtablissementFinancier" required>
+          <option value="">Sélectionner un établissement</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="montant">Montant (€) :</label>
+        <input type="number" id="montant" placeholder="Ex: 10000 €" step="0.01" min="1000" required>
+      </div>
+      <div class="input-group">
+        <label for="dureeMois">Durée (mois) :</label>
+        <input type="number" id="dureeMois" placeholder="Ex: 12 mois" min="1" required>
+      </div>
+      <div class="input-group">
+        <label for="delaiPremierRemboursementMois">Délai 1er remboursement (mois) :</label>
+        <input type="number" id="delaiPremierRemboursementMois" placeholder="Ex: 3 mois" min="0" max="24" value="0" title="Nombre de mois avant le premier remboursement">
+      </div>
+      <div class="input-group">
+        <label for="dateDemande">Date de demande :</label>
+        <input type="date" id="dateDemande" required>
+      </div>
+      <div class="input-group">
+        <label for="tauxAssurance">Taux d'assurance (% par an) :</label>
+        <input type="number" id="tauxAssurance" placeholder="Ex: 0.5 %" step="0.01" min="0" max="5" value="0" title="Taux d'assurance annuel en pourcentage">
+      </div>
+    </fieldset>
+    <button onclick="creerPret()">Créer</button>
+    <p id="error-pret-message" class="error"></p>
+    <p id="success-pret-message" class="success"></p>
+    <div id="simulation-result"></div>
   </div>
 
   <h2>Prêts enregistrés</h2>
@@ -61,7 +94,7 @@
   </table>
 
   <script>
-    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
+    const apiBase = "http://localhost/L2/S4/projet_final_S4/examen-projet-final-S4-Info/ws";
 
     function ajax(method, url, data, callback, errorCallback) {
       const xhr = new XMLHttpRequest();
@@ -91,7 +124,7 @@
           select.appendChild(option);
         });
       }, (status, error) => {
-        document.getElementById("error-message").textContent = `Erreur de chargement des clients: ${error}`;
+        document.getElementById("error-pret-message").textContent = `Erreur de chargement des clients: ${error}`;
       });
     }
 
@@ -106,7 +139,7 @@
           select.appendChild(option);
         });
       }, (status, error) => {
-        document.getElementById("error-message").textContent = `Erreur de chargement des types de prêts: ${error}`;
+        document.getElementById("error-pret-message").textContent = `Erreur de chargement des types de prêts: ${error}`;
       });
     }
 
@@ -121,71 +154,96 @@
           select.appendChild(option);
         });
       }, (status, error) => {
-        document.getElementById("error-message").textContent = `Erreur de chargement des établissements: ${error}`;
+        document.getElementById("error-pret-message").textContent = `Erreur de chargement des établissements: ${error}`;
       });
     }
 
     function creerPret() {
-      const idClient = document.getElementById("idClient").value;
-      const idTypePret = document.getElementById("idTypePret").value;
-      const idEtablissementFinancier = document.getElementById("idEtablissementFinancier").value;
-      const montant = document.getElementById("montant").value;
-      const dureeMois = document.getElementById("dureeMois").value;
-      const dateDemande = document.getElementById("dateDemande").value;
-      const tauxAssurance = document.getElementById("tauxAssurance").value;
+      try {
+        const idClient = document.getElementById("idClient").value;
+        const idTypePret = document.getElementById("idTypePret").value;
+        const idEtablissementFinancier = document.getElementById("idEtablissementFinancier").value;
+        const montant = document.getElementById("montant").value;
+        const dureeMois = document.getElementById("dureeMois").value;
+        const delaiPremierRemboursementMois = document.getElementById("delaiPremierRemboursementMois").value;
+        const dateDemande = document.getElementById("dateDemande").value;
+        const tauxAssurance = document.getElementById("tauxAssurance").value;
 
-      if (!idClient) {
-        document.getElementById("error-message").textContent = "Sélectionnez un client.";
-        return;
-      }
-      if (!idTypePret) {
-        document.getElementById("error-message").textContent = "Sélectionnez un type de prêt.";
-        return;
-      }
-      if (!idEtablissementFinancier) {
-        document.getElementById("error-message").textContent = "Sélectionnez un établissement.";
-        return;
-      }
-      const parsedMontant = parseFloat(montant);
-      if (montant === "" || isNaN(parsedMontant) || parsedMontant < 1000) {
-        document.getElementById("error-message").textContent = "Le montant doit être supérieur ou égal à 1000 €.";
-        return;
-      }
-      const parsedDureeMois = parseInt(dureeMois);
-      if (dureeMois === "" || isNaN(parsedDureeMois) || parsedDureeMois <= 0) {
-        document.getElementById("error-message").textContent = "La durée doit être un entier positif.";
-        return;
-      }
-      if (!dateDemande) {
-        document.getElementById("error-message").textContent = "La date de demande est requise.";
-        return;
-      }
-      const parsedTauxAssurance = parseFloat(tauxAssurance) || 0;
-      if (tauxAssurance !== "" && (parsedTauxAssurance < 0 || parsedTauxAssurance > 5)) {
-        document.getElementById("error-message").textContent = "Le taux d'assurance doit être compris entre 0 et 5%.";
-        return;
-      }
+        if (!idClient) {
+          document.getElementById("error-pret-message").textContent = "Sélectionnez un client.";
+          return;
+        }
+        if (!idTypePret) {
+          document.getElementById("error-pret-message").textContent = "Sélectionnez un type de prêt.";
+          return;
+        }
+        if (!idEtablissementFinancier) {
+          document.getElementById("error-pret-message").textContent = "Sélectionnez un établissement.";
+          return;
+        }
+        const parsedMontant = parseFloat(montant);
+        if (montant === "" || isNaN(parsedMontant) || parsedMontant < 1000) {
+          document.getElementById("error-pret-message").textContent = "Le montant doit être supérieur ou égal à 1000 €.";
+          return;
+        }
+        const parsedDureeMois = parseInt(dureeMois);
+        if (dureeMois === "" || isNaN(parsedDureeMois) || parsedDureeMois <= 0) {
+          document.getElementById("error-pret-message").textContent = "La durée doit être un entier positif.";
+          return;
+        }
+        const parsedDelai = parseInt(delaiPremierRemboursementMois) || 0;
+        if (parsedDelai < 0 || parsedDelai > 24) {
+          document.getElementById("error-pret-message").textContent = "Le délai de premier remboursement doit être compris entre 0 et 24 mois.";
+          return;
+        }
+        if (!dateDemande) {
+          document.getElementById("error-pret-message").textContent = "La date de demande est requise.";
+          return;
+        }
+        const parsedTauxAssurance = parseFloat(tauxAssurance) || 0;
+        if (tauxAssurance !== "" && (parsedTauxAssurance < 0 || parsedTauxAssurance > 5)) {
+          document.getElementById("error-pret-message").textContent = "Le taux d'assurance doit être compris entre 0 et 5%.";
+          return;
+        }
 
-      const data = `idClient=${idClient}&idTypePret=${idTypePret}&idEtablissementFinancier=${idEtablissementFinancier}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&dateDemande=${dateDemande}&tauxAssurance=${parsedTauxAssurance}`;
-      console.log("Valeurs avant envoi:", { idClient, idTypePret, idEtablissementFinancier, montant: parsedMontant, dureeMois: parsedDureeMois, dateDemande, tauxAssurance: parsedTauxAssurance });
+        const data = `idClient=${idClient}&idTypePret=${idTypePret}&idEtablissementFinancier=${idEtablissementFinancier}&montant=${parsedMontant}&dureeMois=${parsedDureeMois}&delaiPremierRemboursementMois=${parsedDelai}&dateDemande=${dateDemande}&tauxAssurance=${parsedTauxAssurance}`;
+        console.log("Valeurs avant envoi:", { idClient, idTypePret, idEtablissementFinancier, montant: parsedMontant, dureeMois: parsedDureeMois, delaiPremierRemboursementMois: parsedDelai, dateDemande, tauxAssurance: parsedTauxAssurance });
 
-      ajax("POST", "/prets", data, (response) => {
-        document.getElementById("success-message").textContent = `Prêt créé avec l'ID ${response.id}. Cliquez sur Valider pour confirmer.`;
-        chargerPrets();
-        document.getElementById("error-message").textContent = "";
-      }, (status, error) => {
-        document.getElementById("error-message").textContent = `Erreur lors de la création: ${error}`;
-      });
+        ajax("POST", "/prets", data, (response) => {
+          document.getElementById("success-pret-message").textContent = `Prêt créé avec l'ID ${response.id}. Cliquez sur Valider pour confirmer.`;
+          chargerPrets();
+          document.getElementById("error-pret-message").textContent = "";
+          document.getElementById("idClient").value = "";
+          document.getElementById("idTypePret").value = "";
+          document.getElementById("idEtablissementFinancier").value = "";
+          document.getElementById("montant").value = "";
+          document.getElementById("dureeMois").value = "";
+          document.getElementById("delaiPremierRemboursementMois").value = "0";
+          document.getElementById("dateDemande").value = "";
+          document.getElementById("tauxAssurance").value = "0";
+          document.getElementById("simulation-result").innerHTML = "";
+        }, (status, error) => {
+          document.getElementById("error-pret-message").textContent = `Erreur lors de la création du prêt: ${error}`;
+        });
+      } catch (error) {
+        console.error("Erreur dans creerPret:", error);
+        document.getElementById("error-pret-message").textContent = `Erreur JavaScript: ${error.message}`;
+      }
     }
 
     function validerPret(id) {
-      ajax("PUT", `/prets/${id}/valider`, null, () => {
-        document.getElementById("success-message").textContent = "Prêt validé avec succès.";
-        chargerPrets();
-        document.getElementById("error-message").textContent = "";
-      }, (status, error) => {
-        document.getElementById("error-message").textContent = `Erreur lors de la validation: ${error}`;
-      });
+      try {
+        ajax("POST", `/prets/${id}/valider`, null, () => {
+          document.getElementById("success-pret-message").textContent = `Prêt ${id} validé avec succès.`;
+          chargerPrets();
+          document.getElementById("error-pret-message").textContent = "";
+        }, (status, error) => {
+          document.getElementById("error-pret-message").textContent = `Erreur lors de la validation du prêt ${id}: ${error}`;
+        });
+      } catch (error) {
+        console.error("Erreur dans validerPret:", error);
+        document.getElementById("error-pret-message").textContent = `Erreur JavaScript: ${error.message}`;
+      }
     }
 
     function chargerPrets() {
@@ -227,32 +285,20 @@
             <td>${p.montant}</td>
             <td>${p.dureeMois}</td>
             <td>${p.interets}</td>
-            <td>${p.tauxInteretAnnuel}</td>
+            <td>${p.tauxInteret}</td>
             <td>${p.tauxAssurance}</td>
             <td>${p.annuiteMensuelle}</td>
-            <td>${p.sommeTotaleRembourser}</td>
+            <td>${p.coutTotal}</td>
             <td>${p.dateDemande}</td>
             <td>${p.dateRetourEstimee}</td>
             <td>${p.statut}</td>
-            ${hasPendingLoans && p.statut === 'en_attente' ? '<td><button onclick="validerPret(' + p.idPret + ')">Valider</button></td>' : (hasPendingLoans ? '<td></td>' : '')}
+            ${hasPendingLoans && p.statut === 'en_attente' ? `<td><button onclick="validerPret(${p.idPret})">Valider</button></td>` : (hasPendingLoans ? '<td></td>' : '')}
           `;
           tbody.appendChild(tr);
         });
       }, (status, error) => {
-        document.getElementById("error-message").textContent = `Erreur de chargement des prêts: ${error}`;
+        document.getElementById("error-pret-message").textContent = `Erreur de chargement des prêts: ${error}`;
       });
-    }
-
-    function resetForm() {
-      document.getElementById("idClient").value = "";
-      document.getElementById("idTypePret").value = "";
-      document.getElementById("idEtablissementFinancier").value = "";
-      document.getElementById("montant").value = "";
-      document.getElementById("dureeMois").value = "";
-      document.getElementById("dateDemande").value = "";
-      document.getElementById("tauxAssurance").value = "0";
-      document.getElementById("error-message").textContent = "";
-      document.getElementById("success-message").textContent = "";
     }
 
     // Charger les données au démarrage
@@ -260,7 +306,7 @@
     chargerTypesPrets();
     chargerEtablissements();
     chargerPrets();
+    document.getElementById("dateDemande").value = new Date().toISOString().split('T')[0];
   </script>
-
 </body>
 </html>

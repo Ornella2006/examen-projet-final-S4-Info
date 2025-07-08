@@ -38,6 +38,14 @@ class Pret {
             throw new Exception("La durée dépasse la durée maximale autorisée.");
         }
 
+        // Vérifier le délai de premier remboursement
+        $delaiPremierRemboursementMois = isset($data->delaiPremierRemboursementMois) ? intval($data->delaiPremierRemboursementMois) : 0;
+        error_log("Vérification du délai: delaiPremierRemboursementMois={$delaiPremierRemboursementMois}");
+        if ($delaiPremierRemboursementMois < 0 || $delaiPremierRemboursementMois > 12) {
+            error_log("Erreur: Délai de premier remboursement invalide");
+            throw new Exception("Le délai de premier remboursement doit être compris entre 0 et 12 mois.");
+        }
+
         // Vérifier le solde de l'établissement
         error_log("Vérification de l'établissement idEtablissementFinancier={$data->idEtablissementFinancier}");
         $stmt = $db->prepare("SELECT fondTotal FROM EtablissementFinancier_EF WHERE idEtablissementFinancier = ?");
@@ -70,8 +78,9 @@ class Pret {
         $interets = $annuite * $dureeMois - $montant;
         error_log("Intérêts calculés (annuité constante): {$interets}");
 
-        // Calculer la date de retour estimée
-        $dateRetourEstimee = date('Y-m-d', strtotime($data->dateDemande . ' + ' . $data->dureeMois . ' months'));
+        // Calculer la date de retour estimée (incluant le délai)
+        $totalMois = $dureeMois + $delaiPremierRemboursementMois;
+        $dateRetourEstimee = date('Y-m-d', strtotime($data->dateDemande . ' + ' . $totalMois . ' months'));
         error_log("Date de retour estimée: {$dateRetourEstimee}");
 
         try {
@@ -79,8 +88,8 @@ class Pret {
             $stmt = $db->prepare("
                 INSERT INTO Pret_EF (
                     idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, 
-                    dateDemande, interets, dateRetourEstimee, statut, tauxAssurance
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', ?)
+                    delaiPremierRemboursementMois, dateDemande, interets, dateRetourEstimee, statut, tauxAssurance
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_attente', ?)
             ");
             $stmt->execute([
                 $data->idClient,
@@ -88,6 +97,7 @@ class Pret {
                 $data->idEtablissementFinancier,
                 $data->montant,
                 $data->dureeMois,
+                $delaiPremierRemboursementMois,
                 $data->dateDemande,
                 $interets,
                 $dateRetourEstimee,
@@ -175,6 +185,7 @@ class Pret {
                 p.idEtablissementFinancier,
                 p.montant,
                 p.dureeMois,
+                p.delaiPremierRemboursementMois,
                 p.dateDemande,
                 p.dateRetourEstimee,
                 p.interets,
@@ -183,7 +194,8 @@ class Pret {
                 t.libelle,
                 t.tauxInteret,
                 c.nom,
-                c.prenom
+                c.prenom,
+                (SELECT SUM(montantRembourse) FROM Remboursement_EF r WHERE r.idPret = p.idPret) as totalRembourse
             FROM 
                 Pret_EF p
             JOIN 
@@ -206,7 +218,9 @@ class Pret {
             }
             $pret['annuiteMensuelle'] = round($annuiteMensuelle, 2);
             $pret['sommeTotaleRembourser'] = round($annuiteMensuelle * $n, 2);
+            $pret['soldeRestant'] = round($pret['sommeTotaleRembourser'] - ($pret['totalRembourse'] ?: 0), 2);
             $pret['tauxInteretAnnuel'] = $pret['tauxInteret'];
+            $pret['delaiPremierRemboursementMois'] = $pret['delaiPremierRemboursementMois'];
             unset($pret['tauxInteret']);
         }
 
@@ -233,6 +247,13 @@ class Pret {
             throw new Exception("La durée dépasse la durée maximale autorisée.");
         }
 
+        // Vérifier le délai de premier remboursement
+        $delaiPremierRemboursementMois = isset($data->delaiPremierRemboursementMois) ? intval($data->delaiPremierRemboursementMois) : 0;
+        if ($delaiPremierRemboursementMois < 0 || $delaiPremierRemboursementMois > 12) {
+            error_log("Erreur: Délai de premier remboursement invalide");
+            throw new Exception("Le délai de premier remboursement doit être compris entre 0 et 12 mois.");
+        }
+
         // Vérifier le taux d'assurance
         $tauxAssurance = isset($data->tauxAssurance) ? floatval($data->tauxAssurance) : 0.00;
         if ($tauxAssurance < 0 || $tauxAssurance > 5) {
@@ -251,6 +272,10 @@ class Pret {
         $coutTotal = $annuite * $dureeMois;
         $interetsTotaux = $coutTotal - $montant;
 
+        // Calculer la date de retour estimée pour la simulation
+        $totalMois = $dureeMois + $delaiPremierRemboursementMois;
+        $dateRetourEstimee = date('Y-m-d', strtotime($data->dateDemande . ' + ' . $totalMois . ' months'));
+
         error_log("Résultat de la simulation: annuité=" . round($annuite, 2) . ", intérêts totaux=" . round($interetsTotaux, 2) . ", coût total=" . round($coutTotal, 2));
 
         return [
@@ -259,6 +284,8 @@ class Pret {
             'coutTotal' => round($coutTotal, 2),
             'montant' => $montant,
             'dureeMois' => $dureeMois,
+            'delaiPremierRemboursementMois' => $delaiPremierRemboursementMois,
+            'dateRetourEstimee' => $dateRetourEstimee,
             'tauxInteret' => $typePret['tauxInteret'],
             'tauxAssurance' => $tauxAssurance
         ];
