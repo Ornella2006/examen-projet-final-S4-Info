@@ -73,3 +73,6 @@ VALUES
     (2, 1055.56, '2025-03-01'), -- Prêt 2, Caisse d'Épargne
     (2, 1055.56, '2025-04-01'), -- Prêt 2, Caisse d'Épargne
     (3, 641.67, '2025-04-01'); -- Prêt 3, Crédit Agricole
+
+    INSERT INTO SimulationPret_EF (idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, delaiPremierRemboursementMois, interets, tauxAssurance)
+VALUES (1, 1, 1, 500000.00, 120, 0, 65000.00, 0.5); -- Ajuster interets selon calcul total
