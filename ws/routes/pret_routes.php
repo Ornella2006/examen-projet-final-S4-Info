@@ -9,4 +9,6 @@ Flight::route('GET /prets', ['PretController', 'getAll']);
 Flight::route('GET /prets/@idPret/pdf', function($idPret) {
     require_once __DIR__ . '/../../export_pret_pdf.php';
 });
+Flight::route('GET /etablissements/@id/funds', ['EtablissementFinancierController', 'getMonthlyAvailableFunds']);
+
 ?>
