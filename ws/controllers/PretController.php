@@ -81,7 +81,7 @@ class PretController {
         Flight::json($prets);
     }
 
-    public static function simuler() {
+   public static function simuler() {
         $rawInput = file_get_contents('php://input');
         error_log("Données brutes POST /prets/simuler: " . $rawInput);
         parse_str($rawInput, $parsedData);
@@ -101,6 +101,21 @@ class PretController {
         if (empty($data->dureeMois) || !is_numeric($data->dureeMois) || $data->dureeMois <= 0) {
             error_log("Erreur: dureeMois invalide");
             Flight::json(['error' => 'Durée doit être un entier positif'], 400);
+            return;
+        }
+        if (empty($data->idClient) || !is_numeric($data->idClient)) {
+            error_log("Erreur: idClient manquant ou invalide");
+            Flight::json(['error' => 'Identifiant du client requis'], 400);
+            return;
+        }
+        if (empty($data->idEtablissementFinancier) || !is_numeric($data->idEtablissementFinancier)) {
+            error_log("Erreur: idEtablissementFinancier manquant ou invalide");
+            Flight::json(['error' => 'Établissement financier requis'], 400);
+            return;
+        }
+        if (empty($data->dateDemande)) {
+            error_log("Erreur: dateDemande manquante");
+            Flight::json(['error' => 'Date de demande requise'], 400);
             return;
         }
         $tauxAssurance = isset($data->tauxAssurance) ? floatval($data->tauxAssurance) : 0.00;
@@ -123,5 +138,43 @@ class PretController {
             Flight::json(['error' => $e->getMessage()], 400);
         }
     }
+
+      public static function getAllSimulations() {
+        $db = getDB();
+        $sql = "
+            SELECT 
+                s.idSimulation,
+                c.nom AS clientNom,
+                c.prenom AS clientPrenom,
+                t.libelle AS typePret,
+                ef.nomEtablissementFinancier,
+                s.montant,
+                s.dureeMois,
+                s.delaiPremierRemboursementMois,
+                s.interets,
+                s.dateSimulation,
+                s.tauxAssurance
+            FROM 
+                SimulationPret_EF s
+            JOIN 
+                Client_EF c ON s.idClient = c.idClient
+            JOIN 
+                TypePret_EF t ON s.idTypePret = t.idTypePret
+            JOIN 
+                EtablissementFinancier_EF ef ON s.idEtablissementFinancier = ef.idEtablissementFinancier
+        ";
+        if (isset($_GET['ids'])) {
+            $ids = explode(',', $_GET['ids']);
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $sql .= " WHERE s.idSimulation IN ($placeholders)";
+            $stmt = $db->prepare($sql);
+            $stmt->execute($ids);
+        } else {
+            $stmt = $db->query($sql);
+        }
+        $simulations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        Flight::json($simulations);
+    }
 }
+
 ?>

@@ -2,7 +2,7 @@
 $page = isset($_GET['page']) ? basename($_GET['page']) : 'dashboard';
 
 // Définir le chemin de la page
-if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets' || $page === 'simulers' || $page === 'remboursement') {
+if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets' || $page === 'simulers' || $page === 'remboursement' || $page === 'comparer_simulations') {
     $pagePath = __DIR__ . '/../' . $page . '.php'; // Cherche dans la racine
 } else {
     $pagePath = __DIR__ . '/' . $page . '.php'; // Cherche dans template/
@@ -43,6 +43,13 @@ if (!isset($_SESSION['admin_id'])) {
      <?php if ($page === 'remboursement'): ?>
         <link rel="stylesheet" href="../css/remboursement.css">
     <?php endif; ?>
+     <?php if ($page === 'interets_ef'): ?>
+        <link rel="stylesheet" href="../css/interets_ef.css">
+    <?php endif; ?>
+
+   
+
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -70,17 +77,24 @@ if (!isset($_SESSION['admin_id'])) {
                 <a href="template.php?page=prets"><i class="fas fa-hand-holding-usd"></i><span>Gestion de prêt pour les clients</span></a>
             </div>
 
-            <div class="menu-item">
-                <a href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
-            </div>
+            
 
             <div class="menu-item<?php echo $page === 'simulers' ? ' active' : ''; ?>">
                 <a href="template.php?page=simulers"><i class="fas fa-chart-line"></i><span>Simulation</span></a>
             </div>
 
-            <div class="menu-title">Remboursements</div>
-            <div class="menu-item<php echo $page === 'cartes' ? ' active' : ''; ?>">
+            <!-- <div class="menu-title">Remboursements</div> -->
+            <div class="menu-item<?php echo $page === 'cartes' ? ' active' : ''; ?>">
                 <a href="template.php?page=remboursement"><i class="fas fa-credit-card"></i><span>Rembourser un pret</span></a>
+            </div>
+
+            <div class="menu-item<?php echo $page === 'comparer_simulations' ? ' active' : ''; ?>">
+                <a href="template.php?page=comparer_simulations"><i class="fas fa-chart-line"></i><span>Comparaison simulations</span></a>
+            </div>
+
+            
+            <div class="menu-item">
+                <a href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
             </div>
              <!-- 
             <div class="menu-item<php echo $page === 'investissements' ? ' active' : ''; ?>">

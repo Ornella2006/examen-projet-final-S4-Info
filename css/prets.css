@@ -113,3 +113,61 @@
 .form-container td button:hover {
     background-color: var(--hover-color);
 }
+
+#table-prets {
+    width: 100%;
+    overflow-x: auto; /* Ajoute un défilement horizontal si nécessaire */
+    display: block; /* Assure que le tableau respecte les limites du conteneur */
+}
+
+#table-prets th, #table-prets td {
+    min-width: 100px; /* Définit une largeur minimale pour chaque colonne */
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd; /* Ajoute des bordures pour mieux voir les colonnes */
+}
+
+#table-prets th.actions-column, #table-prets td:nth-child(16) {
+    min-width: 120px; /* Assure une largeur suffisante pour la colonne Actions */
+    text-align: center;
+}
+
+#table-prets tr {
+    display: table-row; /* Assure que les lignes sont bien formatées */
+}
+
+.form-container {
+    width: 100%;
+    max-width: none; /* Supprime une éventuelle largeur maximale fixe */
+    overflow-x: auto; /* Permet un défilement si nécessaire */
+}
+
+.content {
+    padding: 20px;
+    width: 100%;
+}
+
+#table-prets th:nth-child(2), #table-prets td:nth-child(2) { /* Colonne Client */
+    min-width: 150px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#table-prets th:nth-child(3), #table-prets td:nth-child(3) { /* Colonne Type de prêt */
+    min-width: 120px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#table-prets th:nth-child(13), #table-prets td:nth-child(13), /* Date de demande */
+#table-prets th:nth-child(14), #table-prets td:nth-child(14) { /* Date de retour estimée */
+    min-width: 100px;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

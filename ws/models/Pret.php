@@ -69,14 +69,16 @@ class Pret {
             throw new Exception("Le taux d'assurance doit être compris entre 0 et 5%.");
         }
 
-        // Calculer les intérêts avec l'annuité constante
-        $tauxEffectifMensuel = ($typePret['tauxInteret'] + $tauxAssurance) / 100 / 12;
+        // Calculer les intérêts avec l'annuité constante (sans inclure l'assurance dans le taux)
+        $tauxEffectifMensuel = $typePret['tauxInteret'] / 100 / 12;
         $montant = floatval($data->montant);
         $dureeMois = intval($data->dureeMois);
         $puissance = pow(1 + $tauxEffectifMensuel, $dureeMois);
         $annuite = $montant * $tauxEffectifMensuel * $puissance / ($puissance - 1);
         $interets = $annuite * $dureeMois - $montant;
-        error_log("Intérêts calculés (annuité constante): {$interets}");
+        $assuranceMensuelle = ($tauxAssurance / 100 / 12) * $montant; // Assurance basée sur le capital initial
+        $paiementMensuel = $annuite + $assuranceMensuelle; // Paiement total = annuité + assurance
+        error_log("Intérêts calculés (annuité constante): {$interets}, Assurance mensuelle: {$assuranceMensuelle}, Paiement mensuel: {$paiementMensuel}");
 
         // Calculer la date de retour estimée (incluant le délai)
         $totalMois = $dureeMois + $delaiPremierRemboursementMois;
@@ -206,7 +208,7 @@ class Pret {
         $prets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($prets as &$pret) {
-            $tauxEffectifMensuel = ($pret['tauxInteret'] + $pret['tauxAssurance']) / 100 / 12;
+            $tauxEffectifMensuel = $pret['tauxInteret'] / 100 / 12;
             $n = $pret['dureeMois'];
             $montant = $pret['montant'];
 
@@ -216,8 +218,13 @@ class Pret {
             } else {
                 $annuiteMensuelle = $montant / $n;
             }
+            $assuranceMensuelle = ($pret['tauxAssurance'] / 100 / 12) * $montant; // Assurance basée sur le capital initial
+            $paiementMensuel = $annuiteMensuelle + $assuranceMensuelle;
+
             $pret['annuiteMensuelle'] = round($annuiteMensuelle, 2);
-            $pret['sommeTotaleRembourser'] = round($annuiteMensuelle * $n, 2);
+            $pret['assuranceMensuelle'] = round($assuranceMensuelle, 2);
+            $pret['paiementMensuel'] = round($paiementMensuel, 2);
+            $pret['sommeTotaleRembourser'] = round($paiementMensuel * $n, 2);
             $pret['soldeRestant'] = round($pret['sommeTotaleRembourser'] - ($pret['totalRembourse'] ?: 0), 2);
             $pret['tauxInteretAnnuel'] = $pret['tauxInteret'];
             $pret['delaiPremierRemboursementMois'] = $pret['delaiPremierRemboursementMois'];
@@ -261,33 +268,90 @@ class Pret {
             throw new Exception("Le taux d'assurance doit être compris entre 0 et 5%.");
         }
 
-        // Calculer le taux effectif mensuel
-        $tauxEffectifMensuel = ($typePret['tauxInteret'] + $tauxAssurance) / 100 / 12;
+        // Vérifier l'existence du client
+        if (!isset($data->idClient) || !is_numeric($data->idClient)) {
+            error_log("Erreur: idClient manquant ou invalide");
+            throw new Exception("Identifiant du client requis.");
+        }
+        $stmt = $db->prepare("SELECT idClient FROM Client_EF WHERE idClient = ? AND actif = 1");
+        $stmt->execute([$data->idClient]);
+        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+            error_log("Erreur: Client inexistant ou inactif pour idClient={$data->idClient}");
+            throw new Exception("Client inexistant ou inactif.");
+        }
+
+        // Vérifier l'existence de l'établissement financier
+        if (!isset($data->idEtablissementFinancier) || !is_numeric($data->idEtablissementFinancier)) {
+            error_log("Erreur: idEtablissementFinancier manquant ou invalide");
+            throw new Exception("Établissement financier requis.");
+        }
+        $stmt = $db->prepare("SELECT idEtablissementFinancier FROM EtablissementFinancier_EF WHERE idEtablissementFinancier = ?");
+        $stmt->execute([$data->idEtablissementFinancier]);
+        if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+            error_log("Erreur: Établissement inexistant pour idEtablissementFinancier={$data->idEtablissementFinancier}");
+            throw new Exception("Établissement financier inexistant.");
+        }
+
+        // Calculer le taux effectif mensuel (sans assurance)
+        $tauxEffectifMensuel = $typePret['tauxInteret'] / 100 / 12;
         $montant = floatval($data->montant);
         $dureeMois = intval($data->dureeMois);
 
         // Calculer l'annuité sans arrondi intermédiaire
         $puissance = pow(1 + $tauxEffectifMensuel, $dureeMois);
         $annuite = $montant * $tauxEffectifMensuel * $puissance / ($puissance - 1);
-        $coutTotal = $annuite * $dureeMois;
-        $interetsTotaux = $coutTotal - $montant;
+        $assuranceMensuelle = ($tauxAssurance / 100 / 12) * $montant; // Assurance basée sur le capital initial
+        $paiementMensuel = $annuite + $assuranceMensuelle;
+        $coutTotal = $paiementMensuel * $dureeMois;
+        $interetsTotaux = $annuite * $dureeMois - $montant;
+        $assuranceTotale = $assuranceMensuelle * $dureeMois;
 
         // Calculer la date de retour estimée pour la simulation
         $totalMois = $dureeMois + $delaiPremierRemboursementMois;
         $dateRetourEstimee = date('Y-m-d', strtotime($data->dateDemande . ' + ' . $totalMois . ' months'));
 
-        error_log("Résultat de la simulation: annuité=" . round($annuite, 2) . ", intérêts totaux=" . round($interetsTotaux, 2) . ", coût total=" . round($coutTotal, 2));
+        // Enregistrer la simulation dans SimulationPret_EF
+        try {
+            error_log("Enregistrement de la simulation dans SimulationPret_EF");
+            $stmt = $db->prepare("
+                INSERT INTO SimulationPret_EF (
+                    idClient, idTypePret, idEtablissementFinancier, montant, dureeMois, 
+                    delaiPremierRemboursementMois, interets, dateSimulation, tauxAssurance
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?)
+            ");
+            $stmt->execute([
+                $data->idClient,
+                $data->idTypePret,
+                $data->idEtablissementFinancier,
+                $montant,
+                $dureeMois,
+                $delaiPremierRemboursementMois,
+                $interetsTotaux,
+                $tauxAssurance
+            ]);
+            $simulationId = $db->lastInsertId();
+            error_log("Simulation enregistrée avec idSimulation={$simulationId}");
+        } catch (PDOException $e) {
+            error_log("Erreur SQL dans l'enregistrement de la simulation: " . $e->getMessage());
+            throw new Exception("Erreur lors de l'enregistrement de la simulation: " . $e->getMessage());
+        }
+
+        error_log("Résultat de la simulation: annuité=" . round($annuite, 2) . ", assurance mensuelle=" . round($assuranceMensuelle, 2) . ", paiement mensuel=" . round($paiementMensuel, 2) . ", intérêts totaux=" . round($interetsTotaux, 2) . ", coût total=" . round($coutTotal, 2));
 
         return [
             'annuite' => round($annuite, 2),
+            'assuranceMensuelle' => round($assuranceMensuelle, 2),
+            'paiementMensuel' => round($paiementMensuel, 2),
             'interetsTotaux' => round($interetsTotaux, 2),
+            'assuranceTotale' => round($assuranceTotale, 2),
             'coutTotal' => round($coutTotal, 2),
             'montant' => $montant,
             'dureeMois' => $dureeMois,
             'delaiPremierRemboursementMois' => $delaiPremierRemboursementMois,
             'dateRetourEstimee' => $dateRetourEstimee,
             'tauxInteret' => $typePret['tauxInteret'],
-            'tauxAssurance' => $tauxAssurance
+            'tauxAssurance' => $tauxAssurance,
+            'idSimulation' => $simulationId
         ];
     }
 }
