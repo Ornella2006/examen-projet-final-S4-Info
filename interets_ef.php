@@ -30,7 +30,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const apiBase = "http://localhost/examen-projet-final-S4-Info/ws";
+    const apiBase = "/examen-projet-final-S4-Info/ws";
 
     function fetchInterets() {
         const debut = document.getElementById('debut').value;
