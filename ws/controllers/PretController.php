@@ -134,5 +134,42 @@ class PretController {
             Flight::json(['error' => $e->getMessage()], 400);
         }
     }
+
+    public static function getAllSimulations() {
+        $db = getDB();
+        $sql = "
+            SELECT 
+                s.idSimulation,
+                c.nom AS clientNom,
+                c.prenom AS clientPrenom,
+                t.libelle AS typePret,
+                ef.nomEtablissementFinancier,
+                s.montant,
+                s.dureeMois,
+                s.delaiPremierRemboursementMois,
+                s.interets,
+                s.dateSimulation,
+                s.tauxAssurance
+            FROM 
+                SimulationPret_EF s
+            JOIN 
+                Client_EF c ON s.idClient = c.idClient
+            JOIN 
+                TypePret_EF t ON s.idTypePret = t.idTypePret
+            JOIN 
+                EtablissementFinancier_EF ef ON s.idEtablissementFinancier = ef.idEtablissementFinancier
+        ";
+        if (isset($_GET['ids'])) {
+            $ids = explode(',', $_GET['ids']);
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $sql .= " WHERE s.idSimulation IN ($placeholders)";
+            $stmt = $db->prepare($sql);
+            $stmt->execute($ids);
+        } else {
+            $stmt = $db->query($sql);
+        }
+        $simulations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        Flight::json($simulations);
+    }
 }
 ?>
