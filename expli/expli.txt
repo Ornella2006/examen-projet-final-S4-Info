@@ -128,7 +128,7 @@ et apres on pourrait savoir si ca marche si je change avec autre chose => etabli
 systeme de simulation
 
 
-IP1 : 172.60.0.13
+IP1 : 172.60.0.21
 IP2 : 172.60.0.17
 IP3 : 172.60.0.18
 IP4 : 172.60.255.250
