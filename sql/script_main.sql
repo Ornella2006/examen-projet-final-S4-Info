@@ -65,6 +65,24 @@ CREATE TABLE Remboursement_EF (
     FOREIGN KEY (idPret) REFERENCES Pret_EF(idPret) ON DELETE CASCADE
 );
 
+
+
+CREATE TABLE SimulationPret_EF (
+    idSimulation INT PRIMARY KEY AUTO_INCREMENT,
+    idClient INT,
+    idTypePret INT,
+    idEtablissementFinancier INT NOT NULL,
+    montant DECIMAL(15,2) NOT NULL,
+    dureeMois INT NOT NULL,
+    delaiPremierRemboursementMois INT NOT NULL DEFAULT 0,
+    interets DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    dateSimulation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tauxAssurance DECIMAL(5,2) NULL,
+    FOREIGN KEY (idClient) REFERENCES Client_EF(idClient) ON DELETE CASCADE,
+    FOREIGN KEY (idTypePret) REFERENCES TypePret_EF(idTypePret) ON DELETE CASCADE,
+    FOREIGN KEY (idEtablissementFinancier) REFERENCES EtablissementFinancier_EF(idEtablissementFinancier)
+);
+
 CREATE TABLE Admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
