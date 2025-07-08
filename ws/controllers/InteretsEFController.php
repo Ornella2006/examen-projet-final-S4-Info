@@ -13,16 +13,19 @@ class InteretsEFController {
             $dateDebut = $debut . '-01';
             $dateFin = date('Y-m-t', strtotime($fin . '-01')); // Dernier jour du mois
 
-            // Requête pour calculer les intérêts par période
+            // Requête pour calculer les intérêts par période et par EF
             $sql = "
                 SELECT 
                     DATE_FORMAT(r.dateRemboursement, '%Y-%m') AS periode,
+                    ef.idEtablissementFinancier,
+                    ef.nomEtablissementFinancier,
                     SUM(p.interets / p.dureeMois) AS total_interets
                 FROM Remboursement_EF r
                 INNER JOIN Pret_EF p ON r.idPret = p.idPret
+                INNER JOIN EtablissementFinancier_EF ef ON p.idEtablissementFinancier = ef.idEtablissementFinancier
                 WHERE r.dateRemboursement BETWEEN :date_debut AND :date_fin
-                GROUP BY periode
-                ORDER BY periode
+                GROUP BY periode, ef.idEtablissementFinancier, ef.nomEtablissementFinancier
+                ORDER BY periode, ef.idEtablissementFinancier
             ";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['date_debut' => $dateDebut, 'date_fin' => $dateFin]);

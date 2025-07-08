@@ -64,3 +64,12 @@ CREATE TABLE Remboursement_EF (
     dateCreation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (idPret) REFERENCES Pret_EF(idPret) ON DELETE CASCADE
 );
+
+CREATE TABLE Admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    motDePasse VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Admin(nom, motDePasse) VALUES
+('admin','admin123');

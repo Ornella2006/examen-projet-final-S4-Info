@@ -52,7 +52,7 @@ if (!isset($_SESSION['admin_id'])) {
         <div class="sidebar-menu">
             <div class="menu-title">Navigation Principale</div>
             <div class="menu-item<?php echo $page === 'dashboard' ? ' active' : ''; ?>">
-                <a href="template.php?page=interets_ef"><i class="fas fa-chart-pie"></i><span>Tableau de bord</span></a>
+                <a href="template.php?page=interets_ef"><i class="fas fa-chart-pie"></i><span>Tableau de bord & Interets par EF</span></a>
             </div>
             <div class="menu-item<?php echo $page === 'ajouter_fonds' ? ' active' : ''; ?>">
                 <a href="template.php?page=ajouter_fonds"><i class="fas fa-money-bill-wave"></i><span>Ajout de fond dans l'établissement financier (EF)</span></a>
@@ -63,34 +63,34 @@ if (!isset($_SESSION['admin_id'])) {
             <div class="menu-item<?php echo $page === 'prets' ? ' active' : ''; ?>">
                 <a href="template.php?page=prets"><i class="fas fa-hand-holding-usd"></i><span>Gestion de prêt pour les clients</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'analytiques' ? ' active' : ''; ?>">
-                <a href="template.php?page=analytiques"><i class="fas fa-chart-line"></i><span>Analytiques Financières</span></a>
-            </div>
+<!--             <div class="menu-item<php echo $page === 'analytiques' ? ' active' : ''; ?>">
+                <a href="template.php?page=interets_ef"><i class="fas fa-chart-line"></i><span>Interets par EF</span></a>
+            </div> -->
             <div class="menu-item">
                 <a href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
             </div>
 
-            <div class="menu-title">Services Financiers</div>
-            <div class="menu-item<?php echo $page === 'cartes' ? ' active' : ''; ?>">
+            <!-- <div class="menu-title">Services Financiers</div>
+            <div class="menu-item<php echo $page === 'cartes' ? ' active' : ''; ?>">
                 <a href="template.php?page=cartes"><i class="fas fa-credit-card"></i><span>Cartes & Crédits</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'investissements' ? ' active' : ''; ?>">
+            <div class="menu-item<php echo $page === 'investissements' ? ' active' : ''; ?>">
                 <a href="template.php?page=investissements"><i class="fas fa-percentage"></i><span>Taux & Investissements</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'prets' ? ' active' : ''; ?>">
+            <div class="menu-item<php echo $page === 'prets' ? ' active' : ''; ?>">
                 <a href="template.php?page=prets"><i class="fas fa-hand-holding-usd"></i><span>Prêts & Hypothèques</span></a>
             </div>
 
             <div class="menu-title">Administration</div>
-            <div class="menu-item<?php echo $page === 'parametres' ? ' active' : ''; ?>">
+            <div class="menu-item<php echo $page === 'parametres' ? ' active' : ''; ?>">
                 <a href="template.php?page=parametres"><i class="fas fa-cog"></i><span>Paramètres Système</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'securite' ? ' active' : ''; ?>">
+            <div class="menu-item<php echo $page === 'securite' ? ' active' : ''; ?>">
                 <a href="template.php?page=securite"><i class="fas fa-shield-alt"></i><span>Sécurité & Conformité</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'support' ? ' active' : ''; ?>">
+            <div class="menu-item<php echo $page === 'support' ? ' active' : ''; ?>">
                 <a href="template.php?page=support"><i class="fas fa-headset"></i><span>Support Premium</span></a>
-            </div>
+            </div> -->
         </div>
     </div>
 

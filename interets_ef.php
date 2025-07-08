@@ -1,6 +1,6 @@
 <div class="header">
     <div class="page-title">
-        <h1>Intérêts Gagnés par Mois</h1>
+        <h1>Intérêts Gagnés par Mois et par Établissement Financier</h1>
     </div>
 </div>
 
@@ -17,6 +17,8 @@
         <thead>
             <tr>
                 <th>Période</th>
+                <th>ID EF</th>
+                <th>Nom EF</th>
                 <th>Total intérêts (€)</th>
             </tr>
         </thead>
@@ -47,36 +49,50 @@
                 console.log("Données reçues:", data);
                 const tbody = document.getElementById('interets-tbody');
                 tbody.innerHTML = '';
-                const labels = [];
-                const values = [];
+
+                // Organiser les données par période et EF
+                const periods = [...new Set(data.map(row => row.periode))];
+                const efMap = {};
+                data.forEach(row => {
+                    if (!efMap[row.idEtablissementFinancier]) {
+                        efMap[row.idEtablissementFinancier] = {
+                            nom: row.nomEtablissementFinancier,
+                            data: {}
+                        };
+                    }
+                    efMap[row.idEtablissementFinancier].data[row.periode] = parseFloat(row.total_interets);
+                });
+
+                // Remplir le tableau
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="2">Aucune donnée disponible pour cette période.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4">Aucune donnée disponible pour cette période.</td></tr>';
                 } else {
                     data.forEach(row => {
-                        labels.push(row.periode);
-                        values.push(parseFloat(row.total_interets));
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${row.periode}</td>
+                            <td>${row.idEtablissementFinancier}</td>
+                            <td>${row.nomEtablissementFinancier}</td>
                             <td>${parseFloat(row.total_interets).toFixed(2)} €</td>
                         `;
                         tbody.appendChild(tr);
                     });
                 }
 
+                // Créer le graphique
                 const ctx = document.getElementById('chart').getContext('2d');
                 if (window.myChart) window.myChart.destroy();
                 window.myChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Intérêts gagnés (€)',
-                            data: values,
-                            backgroundColor: 'rgba(52, 152, 219, 0.5)',
-                            borderColor: 'rgba(52, 152, 219, 1)',
+                        labels: periods,
+                        datasets: Object.keys(efMap).map(efId => ({
+                            label: `EF ${efId} - ${efMap[efId].nom}`,
+                            data: periods.map(p => efMap[efId].data[p] || 0),
+                            backgroundColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`,
+                            borderColor: `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 1)`,
                             borderWidth: 1
-                        }]
+                        }))
                     },
                     options: {
                         responsive: true,
