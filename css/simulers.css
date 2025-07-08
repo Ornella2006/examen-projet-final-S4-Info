@@ -1,0 +1,177 @@
+/* Général */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Header */
+.header {
+    background-color: #2c3e50;
+    padding: 10px 20px;
+    color: #fff;
+}
+
+.page-title h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Content */
+.content {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Formulaire */
+fieldset {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+    padding: 0 10px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.input-group select,
+.input-group input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s;
+}
+
+.input-group select:focus,
+.input-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #3498db;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Message d'erreur */
+.error {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Résultat de la simulation */
+#simulation-result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #333;
+}
+
+#simulation-result h3 {
+    font-size: 18px;
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+#simulation-result p {
+    margin: 5px 0;
+}
+
+/* Compatibilité thème sombre */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    .header {
+        background-color: #34495e;
+    }
+
+    fieldset {
+        background-color: #2c2c2c;
+        border-color: #555;
+    }
+
+    legend {
+        color: #e0e0e0;
+    }
+
+    .input-group label {
+        color: #e0e0e0;
+    }
+
+    .input-group select,
+    .input-group input {
+        background-color: #333;
+        color: #e0e0e0;
+        border-color: #555;
+    }
+
+    .input-group select:focus,
+    .input-group input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+
+    button {
+        background-color: #3498db;
+    }
+
+    button:hover {
+        background-color: #2980b9;
+    }
+
+    .error {
+        color: #ff6b6b;
+    }
+
+    #simulation-result {
+        background-color: #2c2c2c;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+
+    #simulation-result h3 {
+        color: #e0e0e0;
+    }
+}

@@ -2,7 +2,7 @@
 $page = isset($_GET['page']) ? basename($_GET['page']) : 'dashboard';
 
 // Définir le chemin de la page
-if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets') {
+if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets' || $page === 'simulers') {
     $pagePath = __DIR__ . '/../' . $page . '.php'; // Cherche dans la racine
 } else {
     $pagePath = __DIR__ . '/' . $page . '.php'; // Cherche dans template/
@@ -37,6 +37,9 @@ if (!isset($_SESSION['admin_id'])) {
     <?php if ($page === 'prets'): ?>
         <link rel="stylesheet" href="../css/prets.css">
     <?php endif; ?>
+     <?php if ($page === 'prets'): ?>
+        <link rel="stylesheet" href="../css/simulers.css">
+    <?php endif; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -63,11 +66,13 @@ if (!isset($_SESSION['admin_id'])) {
             <div class="menu-item<?php echo $page === 'prets' ? ' active' : ''; ?>">
                 <a href="template.php?page=prets"><i class="fas fa-hand-holding-usd"></i><span>Gestion de prêt pour les clients</span></a>
             </div>
-<!--             <div class="menu-item<php echo $page === 'analytiques' ? ' active' : ''; ?>">
-                <a href="template.php?page=interets_ef"><i class="fas fa-chart-line"></i><span>Interets par EF</span></a>
-            </div> -->
+
             <div class="menu-item">
                 <a href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
+            </div>
+
+            <div class="menu-item<?php echo $page === 'simulers' ? ' active' : ''; ?>">
+                <a href="template.php?page=simulers"><i class="fas fa-chart-line"></i><span>Simulation</span></a>
             </div>
 
             <!-- <div class="menu-title">Services Financiers</div>
