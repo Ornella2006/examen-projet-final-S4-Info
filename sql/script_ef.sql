@@ -101,3 +101,12 @@ INSERT INTO Remboursement_EF (idPret, montant, date_remboursement, interet)
 VALUES 
 (1, 2577.76, '2025-07-01', 1375.00),
 (1, 2589.57, '2025-08-01', 1363.19);
+
+CREATE TABLE Admin (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    motDePasse VARCHAR(255) NOT NULL
+);
+
+INSERT INTO Admin(nom, motDePasse) VALUES
+('admin','admin123');

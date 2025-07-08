@@ -13,6 +13,12 @@ if (!file_exists($pagePath)) {
     $page = 'dashboard';
     $pagePath = __DIR__ . '/dashboard.php';
 }
+
+session_start();
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,15 +28,15 @@ if (!file_exists($pagePath)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Finance | <?php echo ucfirst(str_replace('-', ' ', $page)); ?></title>
     <link rel="stylesheet" href="../css/template.css">
-     <?php if ($page === 'ajouter_fonds'): ?>
-           <link rel="stylesheet" href="../css/ajout_fonds.css">
-       <?php endif; ?>
-        <?php if ($page === 'types-prets'): ?>
-           <link rel="stylesheet" href="../css/types-prets.css">
-       <?php endif; ?>
-       <?php if ($page === 'prets'): ?>
-           <link rel="stylesheet" href="../css/prets.css">
-       <?php endif; ?>
+    <?php if ($page === 'ajouter_fonds'): ?>
+        <link rel="stylesheet" href="../css/ajout_fonds.css">
+    <?php endif; ?>
+    <?php if ($page === 'types-prets'): ?>
+        <link rel="stylesheet" href="../css/types-prets.css">
+    <?php endif; ?>
+    <?php if ($page === 'prets'): ?>
+        <link rel="stylesheet" href="../css/prets.css">
+    <?php endif; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -48,7 +54,7 @@ if (!file_exists($pagePath)) {
             <div class="menu-item<?php echo $page === 'dashboard' ? ' active' : ''; ?>">
                 <a href="template.php?page=interets_ef"><i class="fas fa-chart-pie"></i><span>Tableau de bord</span></a>
             </div>
-            <div class="menu-item<?php echo $page === 'dashboard' ? ' active' : ''; ?>">
+            <div class="menu-item<?php echo $page === 'ajouter_fonds' ? ' active' : ''; ?>">
                 <a href="template.php?page=ajouter_fonds"><i class="fas fa-money-bill-wave"></i><span>Ajout de fond dans l'établissement financier (EF)</span></a>
             </div>
             <div class="menu-item<?php echo $page === 'types-prets' ? ' active' : ''; ?>">
@@ -57,9 +63,11 @@ if (!file_exists($pagePath)) {
             <div class="menu-item<?php echo $page === 'prets' ? ' active' : ''; ?>">
                 <a href="template.php?page=prets"><i class="fas fa-hand-holding-usd"></i><span>Gestion de prêt pour les clients</span></a>
             </div>
-            </div>
             <div class="menu-item<?php echo $page === 'analytiques' ? ' active' : ''; ?>">
                 <a href="template.php?page=analytiques"><i class="fas fa-chart-line"></i><span>Analytiques Financières</span></a>
+            </div>
+            <div class="menu-item">
+                <a href="../logout.php"><i class="fas fa-sign-out-alt"></i><span>Déconnexion</span></a>
             </div>
 
             <div class="menu-title">Services Financiers</div>
