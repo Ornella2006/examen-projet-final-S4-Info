@@ -2,7 +2,7 @@
 $page = isset($_GET['page']) ? basename($_GET['page']) : 'dashboard';
 
 // Définir le chemin de la page
-if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets' || $page === 'simulers' || $page === 'remboursement') {
+if ($page === 'interets_ef' || $page === 'ajouter_fonds' || $page === 'types-prets' || $page === 'prets' || $page === 'simulers' || $page === 'remboursement' || $page === 'etablissement_funds') {
     $pagePath = __DIR__ . '/../' . $page . '.php'; // Cherche dans la racine
 } else {
     $pagePath = __DIR__ . '/' . $page . '.php'; // Cherche dans template/
@@ -76,6 +76,10 @@ if (!isset($_SESSION['admin_id'])) {
 
             <div class="menu-item<?php echo $page === 'simulers' ? ' active' : ''; ?>">
                 <a href="template.php?page=simulers"><i class="fas fa-chart-line"></i><span>Simulation</span></a>
+            </div>
+            
+            <div class="menu-item<?php echo $page === 'etablissement_funds' ? ' active' : ''; ?>">
+                <a href="template.php?page=etablissement_funds"><i class="fas fa-chart-line"></i><span>tableau</span></a>
             </div>
 
             <div class="menu-title">Remboursements</div>
