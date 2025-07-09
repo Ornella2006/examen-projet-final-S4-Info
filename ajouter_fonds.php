@@ -8,7 +8,7 @@
         <i class="fas fa-chevron-down"></i>
     </div> -->
 </div>
-<script>
+<style>
     .page-title h1 {
     margin: 0;
     font-size: 22px;
@@ -134,7 +134,7 @@ table td:last-child {
     }
 }
 
-    </script>
+    </style>
 
 <div class="content">
     <div class="form-container">
